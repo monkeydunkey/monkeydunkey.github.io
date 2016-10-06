@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-96x96.png">
+    <title>List of my Blogs</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../stylesheets/blog.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item active" href="index.html">Home</a>
+          <a class="blog-nav-item" href="resources.html">Resources</a>
+          <a class="blog-nav-item" href="#">Contact</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="blog-header">
+        <h1 class="blog-title">Simple is good</h1>
+        <p class="lead blog-description">Motivation for why doing simple things first is better.</p>
+      </div>
+
+
+            <div class="row">
+              <div class="col-sm-12 blog-main">
+                <div class="blog-post">
+                  <p>This is just a motivational post, if you want to skip all my gibberish and head straight to material click <a href="#">here</a>.</p>
+                  <br>
+                  When I first started learning data science and machine learning, I had a few goals in my mind:
+                  <ol type = "a">
+                    <li> Learn all these fancy machine learning techniques</li>
+                    <li> Win big bucks in Kaggle competitions by using the above learned techniques</li>
+                  </ol>
+                  Naturally, with such goals in mind I sought out the fastest way to accomplish all of this.
+                  The hacker inside me knew that there was a shortcut to it all and reading up on basic techniques
+                  was not worth as they were never used in a real world scenario, or so I thought. After reading up
+                  a lot of blogs on the cutting edge models used by Kaggle competition winner, I decided to enter a
+                  competition and try out my new learned skill :D. After creating a lot of parametric and non-parametric
+                  (I will talk about them in a later blog) models and ensembling them (yup first attempt at my first
+                  competition I was ensembling models), I decided to upload my solution. Before uploading I saw that
+                  scores of quite a few people were less than even the sample submission provided by the competition master
+                  and I thought to myself how bad can you suck at this that the sample is better than your solution.
+                  So, laughing at these people I uploaded my solution and after seeing the results my laughter changed into
+                  bewilderment, I was at the bottom of the leaderboard, lower than any of the people I was just laughing at.
+                  <br>
+                  <br>
+                  My brain went into complete denial, this can’t be true I applied at methods used by competition winners, how
+                  can I be at the bottom? There must have been a mistake, I must have uploaded the wrong file. So, after
+                  re-uploading the files and trying to change the parameters in the models used, it slowly dawned on me that my
+                  solution sucked. So I started looking at the discussion forum and kernels that other people had created to try
+                  an understand what went wrong. I found a kernel in which a guy discussed his approach and his approach was
+                  fairly simple, he used only one of the techniques used by me and yet his solution was a hundred times better
+                  than mine. So what was the difference, he applied a small transformation to his data to handle highly skewed
+                  variables and that was it. This one simple thing made his solution perform far better than mine.
+                  <br>
+                  <br>
+                  It was then that I realized that fancy shiny methods are nice but they really cannot work if the dataset does
+                  not suit them. And the best to understand a dataset as to which methods can be applied is to try out the simple
+                  things first
+                  <br>
+                  <br>
+                  tldr: Tried fancy stuff without understanding the basics.
+                  <br>
+                  <br>
+                  Now let’s see how one of the easiest method <a href = "#">Term frequency</a> can reveal interesting information a dataset
+
+                </div><!-- /.blog-post -->
+              </div><!-- /.blog-main -->
+            </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <footer class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>A shout out to Rob Hust for the fantastic icon.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../stylesheets/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
