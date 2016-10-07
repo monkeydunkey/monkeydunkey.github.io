@@ -18,7 +18,9 @@ h6, .h6 {
   font-weight: normal;
   color: #333;
 }
-
+li{
+    margin-bottom: 15px;
+}
 
 /*
  * Override Bootstrap's default container.

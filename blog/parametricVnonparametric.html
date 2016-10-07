@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-96x96.png">
+    <title>Parametric Vs Non parametric</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../stylesheets/blog.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item active" href="../index.html">Home</a>
+          <a class="blog-nav-item" href="../resources.html">Resources</a>
+          <a class="blog-nav-item" href="#">Contact</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="blog-header">
+        <h1 class="blog-title">Parametric Vs Non-parametric Models</h1>
+        <p class="lead blog-description">What are these two models and differences between them</p>
+      </div>
+
+
+            <div class="row">
+              <div class="col-sm-12 blog-main">
+                <div class="blog-post">
+                  <h2>Parametric Models</h2>
+                  These are the models which repsent the relationship between in the predictor variables and
+                  the output in form an equation for e.g. a linear equation. lets consider the following
+                  data set:
+                  <br>
+                  <br>
+                  <div>
+                    <img style = "display: block;margin: 0 auto; width:50%"src="../resources/images/ScatterPlotLiearRegression.png">
+                  </div>
+                  <br>
+                  For this dataset if we were to apply any kind of parametric model, we first need to assume
+                  the dstribution of the data. Here the relation seems to be linear in nature. eyballing the
+                  data in order to figure out the type of relation wont work if the number of dimensions high.
+                  In such scenarios we need to try different models and choose the one with the least error.
+
+                  <br>
+                  So, back to the example here assuming a linear relation we can model our data as a linear
+                  regression model. Generally the data will not be linearly distributed and hence a linear
+                  model will not lead to most optimal result but applying a linear model is a good starting
+                  step for initial data analysis.
+                  <br>
+                  <br>
+                  <h2>Non-parametric Models</h2>
+                  In non-parametric models as opposed to parametric models, we don't assume anything, rather
+                  the data tells us what the 'regression' should look like.
+
+                  Non-Parametric Model can be written as:
+                  <br>
+                  <br>
+                  <div style = "text-align:center"><i>yi = f(xi) + ei</i></div>
+                  <br>
+                  Here f(.) can be any function. The data will decide what the function f looks like. Data
+                  will not tell you the analytic expression for f(.), but it will give you its graph given
+                  your data set.
+                  <br>
+                  <br>
+                  <h2>Choosing one over other</h2>
+                  The decision of using either a parametric or a non-parametric model depends on the reason
+                  behind the analysis. If you are doing it understand how the different predictors contribute
+                  to the model and their general relationship among themselves, then you should use a parametric
+                  model as eqaution of the model can be used to understand the contributions pretty well.
+                  <br>
+                  For e.g. let <i> y = 3x + c </i>  be the equation for the linear regression line for some dataset.
+                  So, just by looking at it we can understand that an increase in of 1 in x will lead to
+                  an increase of 3 in y. Such an insight cannot be drawn from non-parametric model as we
+                  don't know how the predictors are interacting with each other and the output variable.
+                  <br>
+                  On the other hand if you just concerned with the output and do not care how the
+                  factors interact with each other then using either type of model is fine as long
+                  as it suits your data.
+                </div><!-- /.blog-post -->
+              </div><!-- /.blog-main -->
+            </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <footer class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>A shout out to Rob Hust for the fantastic icon.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../stylesheets/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
