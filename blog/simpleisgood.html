@@ -78,7 +78,87 @@
                   tldr: Tried fancy stuff without understanding the basics.
                   <br>
                   <br>
-                  Now let’s see how one of the easiest method <a href = "#">Term frequency</a> can reveal interesting information a dataset
+                  Now let’s see how one of the easiest method <a href = "http://www.tfidf.com/">Term frequency</a> can reveal
+                  interesting information about a dataset.
+
+                  <br>
+                  For this demonstration I will be analyzing Plot Keywords that people assigned to movies on IMDB
+                  The data set can be found <a href="https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset">here</a>.
+                  Following are the libraries that are used.
+                  <ul>
+                    <li>pandas: For basic data analysis</li>
+                    <li>matplotlib: For visualization</li>
+                    <li>wordcloud: For generating word cloud</li>
+                  </ul>
+                  Lets get started. First lets read the data into a dataframe and remove entries where the
+                  number of votes is less than 100 to reduce noise as entries with very less number of votes
+                  are always not so reliable.
+                  <div class ="codeContainer">
+                    <div class="code">
+                      df = pd.read_csv(<span>'data/movie_metadata.csv'</span>')
+                      <br>
+                      df = df[df[<span>''num_voted_users'</span>'] > 100][[<span>''plot_keywords', 'gross', 'budget','duration','imdb_score', 'movie_title'</span>']]
+                    </div>
+                  </div>
+                  As the various plot key words for a movie are stored as a string delimited by '|', we need
+                  to split the plot_keywords column using '|' and then create a new entry in the table for each
+                  keyword
+                  <div class ="codeContainer">
+                    <div class="code">
+                      tags = df[<span>'plot_keywords'</span>].copy().str.split('|').apply(pd.Series, 1).stack()
+                      <br>
+                      tags.index = tags.index.droplevel(-1)
+                      <br>
+                      tags.index
+                      <br>
+                      tags.name = <span>'tags'</span>
+                      <br>
+                      df = df.join(tags)
+                      <br>
+                    </div>
+                  </div>
+                  Here we create a new series containing the keywords and then join it to original dataframe
+                  on the basis of the index.
+                  As we are performing textual analysis we need to weed out certain common words from our corpus.
+                  Words which don't really convey any information but appear quite frequently to mess up our term-frequency
+                  analysis, such as 'the', 'in', etc. Lets create a list of such words from the point of view of our
+                  analysis.
+                  <div class ="codeContainer">
+                    <div class="code">
+                      sWords = {<span>'and', 'in', 'of', 'the', 'on','to', 'title','reference','female','male','by'</span>}
+                    </div>
+                  </div>
+                  Next we are going to use the word cloud library which does all the heavy lifting for us by
+                  calculating the count of each tag and also creating the corresponding word cloud image.
+                  <div class ="codeContainer">
+                    <div class="code">
+                      tagsString = " ".join(df.tags.dropna().tolist())<br>
+                      wordcloud = WordCloud(stopwords=sWords,<br>
+                          &nbsp &nbsp &nbsp &nbsp background_color=<span>'white'</span>,<br>
+                          &nbsp &nbsp &nbsp &nbsp max_words = 30,<br>
+                          &nbsp &nbsp &nbsp &nbsp width=2500,<br>
+                          &nbsp &nbsp &nbsp &nbsp height=2000<br>
+                         ).generate(tagsString)<br>
+                      plt.imshow(wordcloud)<br>
+                      plt.rcParams[<span>"figure.figsize"</span>] = [8, 6]<br>
+                      plt.axis(<span>'off'</span>)<br>
+                      plt.show()<br>
+                    </div>
+                  </div>
+                  Thats all we needed to do to generate a word cloud of the plot keywords. Now lets take a look
+                  at it.
+                  <img src='../resources/images/IMDB_wordCloud.png'>
+                  <br>
+                  Interestingly or obviously 'nudity' is very common in movies. Other frequent words have also
+                  to do with the day to day lives of normal people.
+                  <br>
+                  Using a simple techique like word count or term frequency we were able to create a graphical
+                  representation of what movie are about in our world. Finally, this was a small part of analysis that
+                  I actually did. I went on further to compare the keywords associated with top 250 IMDB movies and
+                  the top 250 highest grossing movies to compare them. You can try it out on your own or read it up
+                  <a href="https://www.kaggle.com/monkeydunkey/d/deepmatrix/imdb-5000-movie-dataset/exploring-plotline-keywords">here</a>
+
+
 
                 </div><!-- /.blog-post -->
               </div><!-- /.blog-main -->

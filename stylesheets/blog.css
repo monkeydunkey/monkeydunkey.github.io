@@ -7,6 +7,19 @@ body {
   color: #555;
 }
 
+.code span{
+  color:red;
+}
+.code{
+  font-size: 13px;
+  padding: 10px;
+  font-style: italic;
+}
+
+.codeContainer{
+  background-color: #eff0f1;
+  margin: 10px;
+}
 h1, .h1,
 h2, .h2,
 h3, .h3,
