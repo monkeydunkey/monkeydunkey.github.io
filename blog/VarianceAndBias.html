@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-96x96.png">
+    <title>Variance and Bias</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../stylesheets/blog.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item active" href="../index.html">Home</a>
+          <a class="blog-nav-item" href="../resources.html">Resources</a>
+          <a class="blog-nav-item" href="#">Contact</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="blog-header">
+        <h1 class="blog-title">Variance and Bias</h1>
+        <p class="lead blog-description">What are they and how to they affect performance of models.</p>
+      </div>
+
+
+            <div class="row">
+              <div class="col-sm-12 blog-main">
+                <div class="blog-post">
+                  The main aim of any statistical or machine learning model is to predict the relationship
+                  between the predictors and respose variable. This relation can be written as:-
+                  <br>
+                  <br>
+                  &nbsp &nbsp &nbsp Y = &#402(X) + &#949
+                  <br>
+                  <br>
+                  Here &#402() is an estimate of the actual relationship between the predictor and response
+                  variable and &#949 is the irreducible error term (caused due to factors not captured by our
+                  predictor variables). Obviously, as per its name we cannot reduce the irreducible error part.
+                  What we can reduce is the error caused by difference in our estimate of the relationship between
+                  X and Y and the actual relationship. This error that we can reduce and make out model better,
+                  is made up of <I>Variance</I> and <I>Bias</I>, both of which are introduced by our selection
+                  of model.
+                  <br>
+                  Generally, we can write the error in our estimate as:
+                  <br>
+                  <br>
+                  &nbsp &nbsp &nbsp E(y<sub>i</sub> - &#402(x<sub>i</sub>)) = Var(&#402(x<sub>i</sub>)) + [Bias(&#402(x<sub>i</sub>))]<sup>2</sup> + Var(&#949)
+                  <br>
+                  <br>
+                  So, what are these terms intutively:
+                  <ul>
+                    <li> <B>Variance</B>: It is the amount by which &#402 will differ if we were we to train the model
+                              again using a different set of data </li>
+                    <li> <B>Bias</B>: It is the error created by approximating a real life problem, which may be complicated
+                            by a much simpler model</li>
+                  </ul>
+                  Variance in caused when the model starts to fit the training data way too closely and in turn even fits in the
+                  noise in the training data. A good example of such models are the non-parametric models. On the other hand
+                  a good example of the models that introduces Bias are the parametric models such as linear regression.
+                  <br>
+                  So, either type of model <a href="parametricvnonparametric.html">parametric or non-parametric</a>
+                  does not garauntee both low Variance as well Bias. In practice one has to strike a balance and try to
+                  reduce both bias and variance as much as possible in order to reduce the error
+
+
+                </div><!-- /.blog-post -->
+              </div><!-- /.blog-main -->
+            </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <footer class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>A shout out to Rob Hust for the fantastic icon.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../stylesheets/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
