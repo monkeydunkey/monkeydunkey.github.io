@@ -108,10 +108,13 @@ body {
 /*
  * Cover
  */
-
+.img-circle{
+  border-radius: 50%;
+}
 .cover {
   padding: 20px;
   padding-top: 50px;
+  margin-top: 50px;
 }
 .cover .btn-lg {
   padding: 10px 20px;
