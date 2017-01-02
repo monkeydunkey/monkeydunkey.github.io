@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" type="image/png" sizes="32x32" href="../favicon-96x96.png">
-    <title>Variance and Bias</title>
+    <title>Hypothesis Testing</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../stylesheets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -43,17 +43,59 @@
                   Hypothesis testing is one of the basic things any data scientist may need to perform. It basically means
                   what it sounds like, you test a hypothesis. Though it sounds simple enough it is actually a very difficult
                   thing to master and requires knowledge of lots of statistical methods. In this blog I will only summarize
-                  the various conditions and what kind of test to do and when. You can in deep about the statistical methods
+                  the various conditions and what kind of test to do and when. You can learn in deep about the statistical methods
                   by going through the courses on descriptive and inferential statistics which you can find on the resources
                   page.
                   <br>
+                  <br>
+                  St. Junior high wants to test whether a new
+                  learning technique 'shiny new technique' is really effective in helping their students learn better or not.
+                  A rather simple way to test this would to introduce this technique to all the students and then see if their was
+                  a significant increase in student understanding of concepts. But this would really be inefficient as it could turn
+                  out that the technique had no effect at all. So they ask you an aspiring data scientist to help them out and just
+                  by looking at their problem you understood that, hypothesis testing is what they need.
+                  <br>
+                  <br>
+                  But before, you can get started with the analysis you need their help with the following:
+                  <ul>
+                    <li><b>Measuring the effect:</b>
+                        <br>
+                        You need a way to quantify the effect of the technique. Remember that St. Junior high just wants that
+                        their students just understand the concepts better. There are multiple ways to do this such as: you
+                        can ask teachers to rate student interaction, get students to rate their understanding of concepts, etc.
+                        To be on the safe side you ask the teachers at St. Junior high to quantify the effect and after much
+                        discussion, they agreed upon the age old student grades.
+                    </li>
+                    <li><b>Statistical Significance:</b>
+                        <br>
+                        In any kind of study be it experimental or observational, what we do is perform an experiment or give a
+                        treatment to a randomly selected subset of the total population. While random selection does provide us
+                        with some surety that average values of the measured paramters is similar to that of the actual population.
+                        But there is still a chance that subset chosen is really different from the average population. For e.g. in
+                        the St. Junior high case if the random subset selected consisted of all the top performers, then even if
+                        the new technique had no effect the results of the sample group will be significantly better than the school's
+                        average.
+                        <br>
+                        <br>
+                        So there is a chance that the effect measured by you in any experiment is the result of random sample selection.
+                        To formally specify this uncertainity we decide upon significance level or &#945-level. A 0.05 &#945 level
+                        means that there is 5% chance of achieving the result by random chance. In other words we are 95% sure that our
+                        result is statistically significant. Popular &#945 values include:- 0.05, 0.01, 0.001. Remember these are just
+                        popular values, one can choose upon any significance level for his or her experiment.
+                        Coming back to the St. Junior high's problem, you deicided upon a 95% confidence interval or 0.05 &#945 level.
+                    </li>
+                  </ul>
+                  <br>
                     Things to write about:
                       <ul>
-                        <li>Statistical significance: </li>
                         <li>One Tailed and two tailed tests: </li>
-                        <li>Z-tests: </li>
-                        <li>T-Tests: </li>
-                        <li>One Way Anova or F-test: </li>
+                        <li>Give a brief introduction to each but perform a test using Z-statistic:
+                          <ul>
+                            <li>Z-tests: </li>
+                            <li>T-Tests: </li>
+                            <li>One Way Anova or F-test: </li>
+                          </ul>
+                        </li>
                       </ul>
                 </div><!-- /.blog-post -->
               </div><!-- /.blog-main -->
