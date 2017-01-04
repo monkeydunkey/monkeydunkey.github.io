@@ -41,15 +41,28 @@
               <div class="col-sm-12 blog-main">
                 <div class="blog-post">
                   Hypothesis testing is one of the basic things any data scientist may need to perform. It basically means
-                  what it sounds like, you test a hypothesis. Though it sounds simple enough it is actually a very difficult
-                  thing to master and requires knowledge of lots of statistical methods. In this blog I will only summarize
-                  the various conditions and what kind of test to do and when. You can learn in deep about the statistical methods
-                  by going through the courses on descriptive and inferential statistics which you can find on the resources
-                  page.
+                  what it sounds like, you test a hypothesis. Though it is simple, especially if you are using a computer
+                  for computation as there are well written libraries in most languages. However it is important that one has
+                  an overall idea as to what it means and signifies. To properly understand and perform a hypothesis requires
+                  requires knowledge and understanding of many statistical methods. In this blog however, I will only summarize
+                  the whole process and give a brief description of the different types of test ad when to perform which. You
+                  can learn in deep about the statistical methods by going through the courses on descriptive and
+                  inferential statistics which you can find on the resources page
                   <br>
                   <br>
+                  <b>What it means:</b>
+                  <br>
+                  By performing a hypothesis test, what we try to prove is that a given sample is significantly different from
+                  a given population. In other words the sample does not belong to the population. To clearify this point, consider
+                  the example of a drug trial. In a drug trial all the people affected by the disease form the population, now the
+                  new drug is a given to a randomly selected sample from the population. Now the drug is effective only if after
+                  its administration the health of the people belonging to the sample is significantly better than the rest of the
+                  population. In other words the sample is significantly different from the population.
+                  <br>
+                  <br>
+                  For the rest of the tutorial we will follow an example and understand the process of hypothesis testing.
                   St. Junior high wants to test whether a new
-                  learning technique 'shiny new technique' is really effective in helping their students learn better or not.
+                  learning technique 'new better technique' is really effective in helping their students learn better or not.
                   A rather simple way to test this would to introduce this technique to all the students and then see if their was
                   a significant increase in student understanding of concepts. But this would really be inefficient as it could turn
                   out that the technique had no effect at all. So they ask you an aspiring data scientist to help them out and just
@@ -86,6 +99,47 @@
                     </li>
                   </ul>
                   <br>
+                  <b>One Tailed and two tailed tests: </b>
+                  <br>
+                  Now that you have decided upon 0.05 &#945 level, you need to set up your null and alternative hypothesis.
+                  <ul>
+                    <li>Null Hypothesis (H<sub>0</sub>): The treatment did not have the desired effect. </li>
+                    <li>Alternative Hypothesis (H<sub>A</sub>): The treatment had an effect. Here however we need to decide what
+                                                                exactly we want. Do we just want the treatment to just have an effect, or do
+                                                                we care wether the effect was positive or negative. If we don't whether the
+                                                                effect was positive or negative then we go with a two-tailed test, else we
+                                                                go with a one-tailed test
+                    </li>
+                  </ul>
+                  A thing to note here would be that if we choose the alternative hypothesis to be directional, were we do care
+                  whether the effect was positive or negative. The null hypothesis would change, for e.g. if H<sub>A</sub> is there
+                  was a positive effect, then H<sub>0</sub> simply becomes that there was no positive effect.
+                  <br>
+                  Lets now look at what I just said visually:
+                  <br>
+                  <br>
+                    <figure>
+                        <img style = "display: block;margin: 0 auto; width:50%" src="../resources/images/OneTailedTest.gif" alt='One tailed test' />
+                        <figcaption style = "text-align:center">Directional or one tailed test</figcaption>
+                    </figure>
+
+                    <figure>
+                      <img style = "display: block;margin: 0 auto; width:50%"src="../resources/images/TwoTailedTest.gif">
+                      <figcaption style = "text-align:center">Non-Directional or two tailed test</figcaption>
+                    </figure>
+                    In a directional or one-tailed test. We would only accept the alternative hypothesis if the sample would lie in the
+                    shaded regions. We would do the same for a two-tailed test, except here the 5% area would be split equally on both
+                    the tails. As, in the case of St. Junior High school we only care if the new technique had any positive effect,
+                    you decided to go with a positive one-tailed test.
+                  <br>
+                  <br>
+
+                  <br>
+                  Another way to look at this is
+                  <br>
+                  <br>
+
+
                     Things to write about:
                       <ul>
                         <li>One Tailed and two tailed tests: </li>
