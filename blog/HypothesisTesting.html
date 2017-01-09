@@ -41,32 +41,64 @@
               <div class="col-sm-12 blog-main">
                 <div class="blog-post">
                   Hypothesis testing is one of the basic things any data scientist may need to perform. It basically means
-                  what it sounds like, you test a hypothesis. Though it is simple, especially if you are using a computer
-                  for computation as there are well written libraries in most languages. However it is important that one has
-                  an overall idea as to what it means and signifies. To properly understand and perform a hypothesis requires
-                  requires knowledge and understanding of many statistical methods. In this blog however, I will only summarize
-                  the whole process and give a brief description of the different types of test ad when to perform which. You
-                  can learn in deep about the statistical methods by going through the courses on descriptive and
-                  inferential statistics which you can find on the resources page
+                  what it sounds like, you test an hypothesis. Though it is simple, especially if you are using some software
+                  package for the computation. It is however, really important to understand what sort of test is sutiable for which
+                  scenario and what does the results mean. To properly understand the various techniques and the reasons
+                  for performing a certain operation for hypothesis testing requires knowledge and understanding of many
+                  statistical concepts. In this blog I will just try to describe the whole process and try to explain the thought
+                  process behind the methods.You can learn in deep about the statistical methods by going through the courses
+                  on descriptive and inferential statistics which can be found on the resources page.
                   <br>
                   <br>
                   <b>What it means:</b>
                   <br>
                   By performing a hypothesis test, what we try to prove is that a given sample is significantly different from
                   a given population. In other words the sample does not belong to the population. To clearify this point, consider
-                  the example of a drug trial. In a drug trial all the people affected by the disease form the population, now the
-                  new drug is a given to a randomly selected sample from the population. Now the drug is effective only if after
-                  its administration the health of the people belonging to the sample is significantly better than the rest of the
-                  population. In other words the sample is significantly different from the population.
+                  the example of a drug trial. In a drug trial all the people affected by a disease that the drug is trying to cure
+                  form the population, now the new drug is a given to a randomly selected sample from the population. The
+                  drug is considered effective only if after its administration the health of the people belonging to the sample
+                  is significantly better than the rest of the population. In other words the sample is significantly different
+                  from the population.
                   <br>
                   <br>
-                  For the rest of the tutorial we will follow an example and understand the process of hypothesis testing.
+                  Lets look at it in another way. Suppose in the drug trial experiment earlier 100 people were chosen for the
+                  experiment. From Central Limit Theorem, we know that the distribution of sample means given that sample
+                  size is large enough will always be normaly distributed. In other words if, we draw lets say 100000 samples of
+                  size 100 from the population of people suffering from a disease and calculate the mean of their health parameters.
+                  Then the distribution of these 100000 means will be bell shaped(normally distributed), like the following figure.
+                  <br>
+                  <br>
+                  <figure>
+                      <img style = "display: block;margin: 0 auto; width:50%" src="../resources/images/normalDist.png" alt='Normal Distribution' />
+                      <figcaption style = "text-align:center">Normal Distribution</figcaption>
+                  </figure>
+                  <br>
+                  <br>
+                  The next step would be to administer the drug to the sample set and then calculate the mean of the sample's health
+                  parameters. Now by doing a hypothesis test we need to try and prove that this red dot representing the treated
+                  sample actualy belongs to a different population (hopefully to that of the population of healthy people) with
+                  certain probabilitic certainty.
+                  <br>
+                  <br>
+                  <figure>
+                      <img style = "display: block;margin: 0 auto; width:50%" src="../resources/images/twoNormal.png" alt='Can belong to anyone' />
+                      <figcaption style = "text-align:center">The treated population can belong to either distribution with certain probability</figcaption>
+                  </figure>
+                  <br>
+                  <br>
+                  So what we will try and prove is that the mean of the treated sample does not belong to the original population but
+                  rather a different population such as the second distribution shown, with certain probabilistic certainity.
+                  If you made it this far, you already sort of understand the idea behind hypothesis testing.
+                  For the rest of the tutorial we will follow an example and understand the process and terminology related to hypothesis
+                  testing.
+                  <br>
+                  <br>
                   St. Junior high wants to test whether a new
                   learning technique 'new better technique' is really effective in helping their students learn better or not.
                   A rather simple way to test this would to introduce this technique to all the students and then see if their was
                   a significant increase in student understanding of concepts. But this would really be inefficient as it could turn
-                  out that the technique had no effect at all. So they ask you an aspiring data scientist to help them out and just
-                  by looking at their problem you understood that, hypothesis testing is what they need.
+                  out that the technique had no effect at all. So they ask you an aspiring data scientist to help them out and you
+                  remember from your statistical foundation courses that hypothesis testing is what is needed here.
                   <br>
                   <br>
                   But before, you can get started with the analysis you need their help with the following:
@@ -103,7 +135,8 @@
                   <br>
                   Now that you have decided upon 0.05 &#945 level, you need to set up your null and alternative hypothesis.
                   <ul>
-                    <li>Null Hypothesis (H<sub>0</sub>): The treatment did not have the desired effect. </li>
+                    <li>Null Hypothesis (H<sub>0</sub>): The treatment did not have the desired effect, or the treated solution still
+                                                        belongs to original distribution</li>
                     <li>Alternative Hypothesis (H<sub>A</sub>): The treatment had an effect. Here however we need to decide what
                                                                 exactly we want. Do we just want the treatment to just have an effect, or do
                                                                 we care wether the effect was positive or negative. If we don't whether the
@@ -111,9 +144,12 @@
                                                                 go with a one-tailed test
                     </li>
                   </ul>
-                  A thing to note here would be that if we choose the alternative hypothesis to be directional, were we do care
-                  whether the effect was positive or negative. The null hypothesis would change, for e.g. if H<sub>A</sub> is there
-                  was a positive effect, then H<sub>0</sub> simply becomes that there was no positive effect.
+                  The decision whether the alternative hypothesis is correct or the null hypothesis depends where our treated sample
+                  lies in the distribution and the significance level that we choose. A thing to note here would be that Null and
+                  Alternative hypothesis always state the opposite of each other, for e.g. if H<sub>A</sub> is that a treament <head>
+                  a positive effect, then the H<sub>0</sub> becomes that the treatment did not have positive effect.
+                  </head>
+
                   <br>
                   Lets now look at what I just said visually:
                   <br>
@@ -130,20 +166,14 @@
                     In a directional or one-tailed test. We would only accept the alternative hypothesis if the sample would lie in the
                     shaded regions. We would do the same for a two-tailed test, except here the 5% area would be split equally on both
                     the tails. As, in the case of St. Junior High school we only care if the new technique had any positive effect,
-                    you decided to go with a positive one-tailed test.
-                  <br>
-                  <br>
-
-                  <br>
-                  Another way to look at this is
+                    we should decided to go with a positive one-tailed test.
                   <br>
                   <br>
 
 
                     Things to write about:
                       <ul>
-                        <li>One Tailed and two tailed tests: </li>
-                        <li>Give a brief introduction to each but perform a test using Z-statistic:
+                        <li>Give a brief introduction to each:
                           <ul>
                             <li>Z-tests: </li>
                             <li>T-Tests: </li>
