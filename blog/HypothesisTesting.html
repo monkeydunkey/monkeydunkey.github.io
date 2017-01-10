@@ -169,18 +169,32 @@
                     we should decided to go with a positive one-tailed test.
                   <br>
                   <br>
-
-
-                    Things to write about:
-                      <ul>
-                        <li>Give a brief introduction to each:
-                          <ul>
-                            <li>Z-tests: </li>
-                            <li>T-Tests: </li>
-                            <li>One Way Anova or F-test: </li>
-                          </ul>
-                        </li>
-                      </ul>
+                  Now that we have deicided on the significance level and our Null and Alternative hypothesis. We just
+                  need to choose which of the following tests will be be suited for this example.
+                  <ul>
+                    <li><b>Z-Statistic:</b> We calculate a z-score (aka, a standard score) which indicates how many standard deviations
+                                            an element is from the mean. z-scores can only be used if we have information about the
+                                            population parameters i.e. the mean and standard deviation.
+                    </li>
+                    <li><b>T-Statistic:</b> We calculate T-Statistics in a way similar to Z-statistics. The difference between the two
+                                            is that when performing t-statistics we do not need the population parameters. Also the
+                                            distribution from which the significance levels are calulated is known as student's distribution
+                                            rather than normal distribution. Student's distribution tends towards normal distribution for
+                                            sample size >= 30
+                    </li>
+                    <li><b>Chi-Sqaure:</b> Both the T-Statistic and Z-Statistic deal only with numerical values.
+                                           Chi-Square test is a way to test for statistical significance in case of categorical
+                                           values.
+                    </li>
+                    <li><b>ANOVA:</b> ANOVA or analysis of variance in a way to measure the difference between two or samples.
+                                      In other words it helps us in indentifying if in the given samples any 2 samples are significantly
+                                      different from one another
+                    </li>
+                  </ul>
+                  As for the St. Junior high case, we have the population parameter, so going with a Z-test makes most sense. I won't be going
+                  over how to calculate the z-scores as in practice most us will use software packages to this sort of stuff anyways.
+                  However if you want to practice, you can use this <a href="./resources/data/St_Junior_High_data.csv">dataset</a>.
+                  you can use <a href="https://docs.scipy.org/doc/scipy-0.18.1/reference/generated/scipy.stats.zmap.html#scipy.stats.zmap">scipy's z map function</a>.
                 </div><!-- /.blog-post -->
               </div><!-- /.blog-main -->
             </div><!-- /.row -->
