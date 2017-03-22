@@ -62,6 +62,9 @@ hr.star-light:after {
   color: white;
   border-color: #18BC9C;
   font-weight: 700;
+
+}
+#projects a{
   font-size: 20px;
 }
 #projects a:hover,
