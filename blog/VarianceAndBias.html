@@ -40,13 +40,14 @@
             <div class="row">
               <div class="col-sm-12 blog-main">
                 <div class="blog-post">
+                <p>
                   The main aim of any statistical or machine learning model is to predict the relationship
                   between the predictors and respose variable. This relation can be written as:-
-                  <br>
-                  <br>
+                </p>
+                <p>
                   &nbsp &nbsp &nbsp Y = &#402(X) + &#949
-                  <br>
-                  <br>
+                </p>
+                <p>
                   Here &#402() is an estimate of the actual relationship between the predictor and response
                   variable and &#949 is the irreducible error term (caused due to factors not captured by our
                   predictor variables). Obviously, as per its name we cannot reduce the irreducible error part.
@@ -54,13 +55,14 @@
                   X and Y and the actual relationship. This error that we can reduce and make out model better,
                   is made up of <I>Variance</I> and <I>Bias</I>, both of which are introduced by our selection
                   of model.
-                  <br>
+                </p>
+                <p>
                   Generally, we can write the error in our estimate as:
-                  <br>
-                  <br>
+                </p>
+                <p>
                   &nbsp &nbsp &nbsp E(y<sub>i</sub> - &#402(x<sub>i</sub>)) = Var(&#402(x<sub>i</sub>)) + [Bias(&#402(x<sub>i</sub>))]<sup>2</sup> + Var(&#949)
-                  <br>
-                  <br>
+                </p>
+                <p>
                   So, what are these terms intutively:
                   <ul>
                     <li> <B>Variance</B>: It is the amount by which &#402 will differ if we were we to train the model
@@ -68,10 +70,13 @@
                     <li> <B>Bias</B>: It is the error created by approximating a real life problem, which may be complicated
                             by a much simpler model</li>
                   </ul>
+                </p>
+                <p>
                   Variance in caused when the model starts to fit the training data way too closely and in turn even fits in the
                   noise in the training data. A good example of such models are the non-parametric models. On the other hand
                   a good example of the models that introduces Bias are the parametric models such as linear regression.
-                  <br>
+                </p>
+                <p>
                   So, either type of model <a href="parametricvnonparametric.html">parametric or non-parametric</a>
                   does not garauntee both low Variance as well Bias. In practice one has to strike a balance and try to
                   reduce both bias and variance as much as possible in order to reduce the error

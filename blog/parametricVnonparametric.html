@@ -41,59 +41,62 @@
               <div class="col-sm-12 blog-main">
                 <div class="blog-post">
                   <h2>Parametric Models</h2>
+                  <p>
                   In parametric models we first assume that the relationship between in the predictor variables and
                   the output is in the form of an equation for e.g. a linear equation and then we try to find the values
                   of the coefficient associated with that equation. To clarify this concept, lets consider a dataset
                   whose scatter plot looks like the following:
-                  <br>
-                  <br>
+                  </p>
                   <div>
                     <img style = "display: block;margin: 0 auto; width:50%"src="../resources/images/ScatterPlotLiearRegression.png">
                   </div>
-                  <br>
+                  <p>
                   Here it is easy to see that the relationship is sort of linear in nature, and hence something
                   like a line equation (y = mx + c) might be a good way to model it. Now we just need to find
                   the values of the coefficients 'm' and 'c', and
                   then we can use this equation to predict output values for any input variables.
-                  <br>
+                  </p>
+                  <p>
                   This was a very simple example, most data sets, however, will have more than 2 predictor variables and there
                   we can't really visualize the relationship like we did here. So does it mean that parametric models are
                   just jargon we need to know if we are in the field of data science and never really use it? No, not really,
                   even though parametric models can't be used without making a lot of assumptions about the data first,
                   but if we do know that the relationship is of a certain form then parametric models do outperform other models.
-                  <br>
-                  <br>
+                  </p>
                   <h2>Non-parametric Models</h2>
+                  <p>
                   In non-parametric models as opposed to parametric models, we don't assume anything about the relationship
                   between the predictor variable and the output. We rather let the model take care of that.
 
                   In general, Non-Parametric Model can be written as:
-                  <br>
-                  <br>
+                  </p>
                   <div style = "text-align:center"><i>Y = &#402(X) + &#949</i></div>
-                  <br>
+                  <p>
                   Here &#402(.) is the function that would define the relationship between the predictors and the output variable.
                   The model would build up what &#402(.) should look like based on the data, we won't know anything about it.
                   For us, it is no better than a black box. As non-parametric models generally can fit any kind of data and doesn't
                   require too many assumptions and so they are usually the model of choice in most applications. However, it is
                   really easy to overfit with non-parametric models as they can fit as closely as possible to the training data set
                   provided.
-                  <br>
-                  <br>
+                  </p>
                   <h2>Choosing one over other</h2>
+                  <p>
                   The decision of using either a parametric or a non-parametric model, in my opinion, depends on the reason
                   behind the analysis. If you are doing it to understand how the different predictors contribute
                   to the model and their general relationship among themselves, then you should use a parametric
                   model as equation of the model can be used to understand the contributions pretty well.
-                  <br>
+                  </p>
+                  <p>
                   For e.g. let <i> y = 3x + c </i>  be the equation for the linear regression line for some dataset.
                   So, just by looking at it we can understand that an increase in of 1 in x will lead to
                   an increase of 3 in y. Such an insight cannot be drawn from a non-parametric model as we
                   don't know how the predictors are interacting with each other and the output variable.
-                  <br>
+                  </p>
+                  <p>
                   On the other hand, if you just concerned with the output and do not care how the
                   factors interact with each other, then using either type of model is fine as long
                   as it suits your data.
+                  </p>
                 </div><!-- /.blog-post -->
               </div><!-- /.blog-main -->
             </div><!-- /.row -->

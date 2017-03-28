@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-96x96.png">
+    <title>Apache Hadoop Setup</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../ThirdParty/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../CSS/blog.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item active" href="../index.html">Home</a>
+          <a class="blog-nav-item" href="../resources.html">Resources</a>
+          <a class="blog-nav-item" href="../Aboutme.html">About</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="blog-header">
+        <h1 class="blog-title">Apache Hadoop Cluster Setup</h1>
+        <p class="lead blog-description">How to download and setup a Hadoop cluster.</p>
+      </div>
+
+
+            <div class="row">
+              <div class="col-sm-12 blog-main">
+                <div class="blog-post">
+                  <p>In this tutorial I will talk about how to setup a hadoop cluster using Mac or Ubuntu systems as nodes. Apache
+                  Hadoop was initially conceived as an Open Source implementation of Google's Map Reduce system. It had 2
+                  components a distributed file storage system HDFS and a Map Reduce implementation. Initially these
+                  two components were intervined together but from version 2.x, they were modularised with
+                  the introduction of YARN (Yet Another Resource Negotiator). Now with that bit of history lesson completed, lets
+                  get started but first we would need to ensure that we have the following softwares installed in our system:
+                   </p>
+                   <ol>
+                     <li>Open JDK
+                       <br>
+                        Open a terminal and type in the following commands
+                        <div class="codeContainer">
+                          java -version
+                          javac -version
+                        </div>
+                        If you get the version information for both the commands then you have Java installed in your system (Note Macs comes with Java pre-installed)
+                        . If there is not JDK installed follow the steps <a href = "https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-get-on-ubuntu-16-04">here</a> to download and set Java on your system.
+                     </li>
+                     <li>Hadoop
+                       <br>
+                        You can download hadoop's latest version form <a href="http://hadoop.apache.org/releases.html">here</a>
+                     </li>
+                     <li>SSH
+                       <br>
+                        Both Mac and Ubuntu should come pre-installed with SSH. In Mac you have to enable remote login before you can use SSH. To do this go to Sharing in System Preferences and select Remote Login.
+                        <br>
+                        For Ubuntu if it is the case that your system does not have SSH pre-installed you can do so by typing in the following command in a terminal shell
+                        <div class="codeContainer">
+                          sudo apt-get install ssh
+                        </div>
+                     </li>
+                   </ol>
+                  <br>
+                  It is a good practice to setup up a Java home and a Hadoop home environment variable in your system. Java Home and Hadoop home will basically be the folder
+                  location where the code for Java and Hadoop is stored. If you already have a file to keep your environment variables adding the following line will be enough. Remember to
+                  open a new terminal though to check the results
+                  <div class = "codeContainer">
+                  JAVA_HOME="/path/to/Java/Home"
+                  <br>
+                  HADOOP_HOME="/path/to/Hadoop/Home"
+                  </div>
+                  You can find the Java home path on mac by typing the following in a terminal shell - "/usr/libexec/java_home"
+                  <br>
+                  <h3>Password less SSH setup</h3>
+                  Now that we are done with the initial setup, it time to choose the master and worker nodes for your cluster. Once you are
+                  done with that follow the following steps to establish bi-directional password less ssh between the master and slave nodes. Though this is not
+                  required by Hadoop as if you don't have this setup you would still be prompted for password when you start up your hadoop cluster but it better
+                  to set this up so you don't have to type in the passwords everytime you start your hadoop cluster.
+                  <ol>
+                    <li>Generate the public key and private key on all the nodes
+                      <br>
+                      <div class = "codeContainer">
+                        ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+                      </div>
+                    </li>
+                    <li>Copy the key generated on a worker node to the master node.
+                      <br>
+                      <div class = "codeContainer">
+                        scp ~/.ssh/id_rsa.pub USERNAME@192.168.0.1:~/.ssh/id_rsa_worker2.pub
+                      </div>
+                      <br>
+                      Note here that we are copying the public generated in step 1 to the master node. The filename will be different on master node this is because master node will have
+                      its own "id_rsa.pub" file and we don't want to overwrite it. Also the reason why the name of all the public private key pairs on all the node is the same
+                      i.e. "id_rsa.pub" is beacuse by default a system will pass on only the public key stored in "id_rsa.pub" during password-less SSH
+                      verification
+                    </li>
+                    <li>Shell into master with passwords from a worker node
+                      <br>
+                      <div class = "codeContainer">
+                        ssh USERNAME@192.168.0.1
+                      </div>
+                    </li>
+                    <li>Authorize the public key by adding it to the list of authorized keys on master
+                      <br>
+                      <div class = "codeContainer">
+                        cat ~/.ssh/id_rsa_worker2.pub >> ~/.ssh/authorized_keys
+                      </div>
+                    </li>
+                    <li>Logout of the shell
+                      <br>
+                      <div class = "codeContainer">
+                        exit
+                      </div>
+                    </li>
+                    <li>Test that you can login into master without a password
+                      <br>
+                      <div class = "codeContainer">
+                        ssh 192.168.0.1
+                      </div>
+                    </li>
+                    <li>Repeat the above steps for each worker node. This would set up a one-directional Password-less SSH.
+                      Now we have to do it the other way around so that the master can also login to each worker node without a password.(Note that it
+                      helps if all the nodes have the same user name and password)
+                    </li>
+                  </ol>
+                  <br>
+                  <h3>Hadoop Configuration</h3>
+                  You should now be able to ssh from the master nodes to all the worker node and vice versa without needing a password
+                  Next we need to update the following configuration files to define certain properties of our Hadoop cluster
+                  <ol>
+                    <li>Append the following lines in /etc/hosts. (Master only)
+                      <br>
+                      masterIP master
+                      <br>
+                      worker1IP worker2
+                      <br>
+                      worker2IP worker3
+                    </li>
+                    <li>
+                      Append the following line in /etc/hosts. (Workers nodes only)
+                      <br>
+                      masterIP master
+                    </li>
+                    <li>
+                      Add the following line in HadoopFolder/etc/hadoop/hadoop-env.sh to point out Java folder(Do this only if you have not setup your JAVA_HOME variable)
+                      <div class="codeContainer">
+                        export JAVA_HOME=/usr/lib/jvm/YOURJAVAFOLDER
+                      </div>
+                  </li>
+                  <li>
+                    Clear content and add the following lines in HadoopFolder/etc/Hadoop/slaves. This step gives the
+                    list of all the machines who can be workers to Hadoop master. (Master only)
+                    <div class="codeContainer">
+                      master
+                      <br>
+                      worker2
+                      <br>
+                      worker3
+                    </div>
+                  </li>
+                  <li>
+                    Append the following lines in HadoopFolder/etc/Hadoop/core-site.xml. (All machines)
+                    <div class = "codeContainer">
+                      &lt;property&gt;
+                      <br>
+                       &lt;name&gt;fs.default.name&lt;/name&gt;
+                       <br>
+                       &lt;value&gt;hdfs://master:54310&lt;/value&gt;
+                       <br>
+                      &lt;/property&gt;
+                      </div>
+                      Here we are specifying where to look for any we will file put in HDFS. Basically "hdfs://master:54310" is the file using which
+                      nodes can access the hadoop file system for e.g. for a file named "testFile.txt" stored in hdfs will have a path "hdfs://master:54310/testFile.txt"
+
+                  </li>
+                  <li>
+                    Append the following lines in HadoopFolder/etc/Hadoop/mapred-site.xml. (All machines)
+                    <div class="codeContainer">
+                    &lt;property&gt;
+                      <br>
+                      &lt;name>mapred.job.tracker&lt;/name&gt;
+                      <br>
+                      &lt;value>master:54311&lt;/value&gt;
+                      <br>
+                    &lt;/property&gt;
+                  </div>
+                  Here we are specifying on which port does the map reduce job tracker lies.
+                  </li>
+                  <li>
+                    Append the following lines in HadoopFolder/etc/Hadoop/hdfs-site.xml. The value should be
+                    consistent with the number of machines in the step 3(4). (All machines)
+                    
+                    <property>
+                      <name>dfs.replication</name>
+                      <value>3</value>
+                    </property>
+                  </li>
+                  </ol>
+                </div><!-- /.blog-post -->
+              </div><!-- /.blog-main -->
+            </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <footer class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>A shout out to Rob Hust for the fantastic icon.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../ThirdParty/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+</html>
