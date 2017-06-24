@@ -33,7 +33,7 @@
 
       <div class="blog-header">
         <h1 class="blog-title">Music Genre Classification Using Convolutional Neural Network</h1>
-        <p class="lead blog-description">Using Convolutional Neural Network to predict a song's genre (This is still in draft phase)</p>
+        <p class="lead blog-description">Using Convolutional Neural Network to predict a song's genre</p>
       </div>
 
 
@@ -42,14 +42,15 @@
                 <div class="blog-post">
                   <p>
                     This post provides a simple and brief overview of what Covolutional Neural Networks are and how to use them to predict the
-                    genre of any songs. I will go into a lot of details so buckle up cause this will be a long post
+                    genre of any songs. I will go into a lot of details so buckle up cause this is gonna be a long post
                   </p>
 
 
                   <p>
                     <h2>Convolutional Neural Network</h2>
-                      Convolutional Neural Networks (CNNs) are a special type of Neural Network in which have special convolutional layers instead
-                      of the usual fully connected layers. The history of CNNs can be traced to Image processing and recognition. Basically,
+                      Convolutional Neural Networks (CNNs) are a special type of Neural Network which have special convolutional layers in addition
+                      of the usual fully connected layers. These convolutional layers are notthing but filters which slide over the data to produce
+                      output. The history of CNNs can be traced to Image processing and recognition. Basically,
                       earlier for any sort of image recognition what people used to do was to generate hand crafted features based on their
                       intuition and understanding of the problem domain. Take for example the following task of recognizing the digit in an image
                       <figure>
@@ -70,7 +71,7 @@
                       the depth of the filter is same as that of the image so if the image has 3 channels Red Green and Blue, then the depth of
                       the filter will be automatically set to 3). The
                       awesome thing about a convolutional network though is that you don't have to worry about designing the filters themselves.
-                      The training portion of the network takes care of that. And his is the exact thing that made CNNs so popular as before the
+                      The training portion of the network takes care of that. And this is the exact thing that made CNNs so popular as before the
                       major challenge in any image recognition task was to come with the hand crafted features and corresponding filters for them.
                   </p>
 
@@ -90,16 +91,18 @@
                       Non Linear Activation functions are what gives neural networks their advantage over other machine learning methods. These
                       activations are inspired from the process that happen in our own neuron. However, they are really just a very crude and
                       rudimentary approximation of the actual process. Common Activation functions are: sigmoid, tanh and relu. Though sigmoid in
-                      the most known function in all of them but sadly it is also the least used one. The most commonly used actication function
-                      is relu, it is actually advised by practitioners to use relu first before experimenting with other functions
+                      the most known function in all of them but sadly it is also the least used one. The most commonly used activation function
+                      is relu, which is simply <i>Max(0, x)</i> where <i>x</i> is the input to the activation function. The reason
+                      relu works better than other activation functions is that it does not saturate, where as both sigmoid and tanh saturate as they
+                      reach their min or max value which causes the gradients to become very very small causing the network to not learn.
                     </p>
                   <h4>Pooling<h4>
                     <p>
                       Pooling is a way to reduce the size of the input to any of the layers in the network. Basically as done with the filters before
-                      a matrix is slided over the output of the Non Linear Activation layer. This matrix however is not learnable and it has to be
+                      a matrix is slided over the output of the Non Linear Activation layer. This matrix however is not learnable and has to be
                       specified while describing the network. There are many type of pooling operations such as min, max, average, etc. . The most
-                      common type of pooling is max pooling, in it a window of size specified during network construction is slid over the output
-                      of the last layer and the max value is found to replace the window with that max value.
+                      common type of pooling is max pooling, in it a window of size specified during network construction. This window is slid
+                      over the input to the layer and the max value is found to replace the window with that max value.
                     </p>
                   <h4>Dropout</h4>
                     <p>
@@ -108,7 +111,8 @@
                       ensembles of networks, someting similar to what happens in a Random Forest or any other Boosted tree methods. Basically,
                       by deactivating some random neurons you ensure that the models does not learn only in a particular direction but rather tries
                       and generalize as much as possible. This is also the reason why Dropout is used as a regularization method to improve model
-                      generalization
+                      generalization. Another reason why people use dropout is that by randomly deactivating certain neurons, you can force
+                      gradients to flow through the network making it learn better.
                     </p>
 
                   <p>
@@ -142,7 +146,7 @@
                     raw audio clip like to we do for images and even if the clips are of size 100ms (this is what we will do a bit later),
                     the input layer would need 4410 neurons. This is not particularly a lot but if you want to train it on your local machine, this
                     might cause an issue as the for each neuron in the network we have to store some data for back propogation and training. So if there
-                    are a lot of neurons in the network, more than for which the data could be stored in the RAM, the train will be very very high.
+                    are a lot of neurons in the network, more than for which the data could be stored in the RAM, the training time will be very very high.
                   </p>
                   <p>
                     So in order to represent the audio file we will use something that is known as a Mel Spectogram. It is basically a spectogram with
@@ -197,6 +201,11 @@ model.add(Conv1D(CONV_FILTER_COUNT, FILTER_LENGTH, kernel_initializer = 'glorot_
 model.add(Activation("relu"))
 model.add(Conv1D(CONV_FILTER_COUNT, FILTER_LENGTH, kernel_initializer = 'glorot_uniform', padding = 'same'))
 model.add(Activation("relu"))
+
+model.add(Flatten())
+model.add(Dense(1024))
+model.add(Activation("relu"))
+model.add(Dropout(dropOut))
 model.add(Dense(len(data)))
 model.add(Activation('softmax',name='softmax_layer'))
 
@@ -217,7 +226,7 @@ model.compile(loss=keras.losses.categorical_crossentropy,
                   </p>
                   <p>
                     I am using Adadelta for training the network, which basically maintains seperate gradient value for each of the dimension.
-                    It further updated the gradient at each step by dividing it by the decaying sum of the previous gradient values. If you want to
+                    It further updates the gradient at each step by dividing it by the decaying sum of the previous gradient values. If you want to
                     better understand what Adadelta does I would recommend reading this <a href="http://sebastianruder.com/optimizing-gradient-descent/">post</a>.
                     So the network that we built just now looks like the following.
                   </p>
@@ -225,7 +234,22 @@ model.compile(loss=keras.losses.categorical_crossentropy,
                       <img style = "display: block;margin: 0 auto; width:100%" src="../resources/images/NetworkArchitecture.png" alt='Network Architecture' />
                       <figcaption style = "text-align:center">Network Architecture</figcaption>
                   </figure>
-
+                  <p>
+                    If you look closely at the final architecture, you will notice that I did not use either dropout or Pooling. The reason for this is that
+                    the shape of each of the sample is (5, 128), so it does not makes sense to pool across a vector of length 5. Similarly, because of the
+                    shape the number of neurons at each of the layer will only be 5, so dropping half of them might not give the best results. However, I did
+                    use dropout before by last layer (you can check this in the code) as there I have plenty of neurons (1024 to be exact).
+                    Finally, I trained my model for 10 epochs with early stopping, i.e. if my validation accuracy did not increase for certain number of
+                    epochs then I stop training it further. I initially tried training for 25 ecpochs but I never saw improvement after 7-8th epoch.
+                    The model achieved an accuracy of 62% on the validation set, which is a far cry from the <a href="https://marl.smusic.nyu.edu/wordpress/wp-content/papercite-data/pdf/ISMIR2013_Deep_Learning_Part2_Hamel.pdf">
+                    benchmark of 84% </a>, but is still a lot better than a random guess of 10%.
+                  </p>
+                  <p>
+                    If you have any questions please leave a comment!
+                  </p>
+                  <p>
+                    Cheers!!
+                  </p>
 
                 </div><!-- /.blog-post -->
               </div><!-- /.blog-main -->
