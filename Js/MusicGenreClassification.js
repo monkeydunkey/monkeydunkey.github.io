@@ -28,7 +28,7 @@ function predictSample(data, callback){
 function loadJSON(fileName, callback) {
 
     var xobj = new XMLHttpRequest(),
-        baseUrl = "https://github.com/monkeydunkey/monkeydunkey.github.io/blob/master/"
+        baseUrl = ""//"https://github.com/monkeydunkey/monkeydunkey.github.io/blob/master/"
     xobj.overrideMimeType("application/json");
     xobj.open('GET', baseUrl + fileName, true);
     xobj.onreadystatechange = function () {
@@ -82,12 +82,12 @@ function processData(data, callback){
      jazzData,
      predictionResult,
      SAMPLES = 21
- loadJSON("resources/data/hiphop.00053.json", function(response) {
+ loadJSON("../resources/data/hiphop.00053.json", function(response) {
   // Parse JSON string into object
     hiphopData = JSON.parse(response);
  });
 
- loadJSON("resources/data/jazz.00051.json", function(response) {
+ loadJSON("../resources/data/jazz.00051.json", function(response) {
   // Parse JSON string into object
     jazzData = JSON.parse(response);
  });
