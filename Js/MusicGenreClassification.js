@@ -36,7 +36,7 @@ function loadJSON(fileName, callback) {
             // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
             callback(xobj.responseText);
           } else {
-            console.error(xhr.statusText);
+            console.error(xobj.statusText);
           }
     };
     xobj.send(null);
@@ -82,12 +82,12 @@ function processData(data, callback){
      jazzData,
      predictionResult,
      SAMPLES = 21
- loadJSON("reources/data/hiphop.00053.json", function(response) {
+ loadJSON("resources/data/hiphop.00053.json", function(response) {
   // Parse JSON string into object
     hiphopData = JSON.parse(response);
  });
 
- loadJSON("reources/data/jazz.00051.json", function(response) {
+ loadJSON("resources/data/jazz.00051.json", function(response) {
   // Parse JSON string into object
     jazzData = JSON.parse(response);
  });
