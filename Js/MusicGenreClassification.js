@@ -1,9 +1,9 @@
 //The Keras lib should be loaded before this file is called
 const model = new KerasJS.Model({
   filepaths: {
-    model: "https://github.com/monkeydunkey/monkeydunkey.github.io/tree/master/resources/Models/musicClassifier.json",
-    weights: "https://github.com/monkeydunkey/monkeydunkey.github.io/tree/master/resources/Models/resources/Models/musicClassifier.buf",
-    metadata: "https://github.com/monkeydunkey/monkeydunkey.github.io/tree/master/resources/Models/resources/Models/musicClassifier.json"
+    model: "../resources/Models/musicClassifier.json",
+    weights: "../resources/Models/musicClassifier_weights.buf",
+    metadata: "../resources/Models/musicClassifier_metadata.json"
   },
   gpu: false
 });
