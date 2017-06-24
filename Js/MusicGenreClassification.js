@@ -27,9 +27,10 @@ function predictSample(data, callback){
 
 function loadJSON(fileName, callback) {
 
-    var xobj = new XMLHttpRequest();
-        xobj.overrideMimeType("application/json");
-    xobj.open('GET', fileName, true);
+    var xobj = new XMLHttpRequest(),
+        baseUrl = "https://github.com/monkeydunkey/monkeydunkey.github.io/blob/master/"
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', baseUrl + fileName, true);
     xobj.onreadystatechange = function () {
           if (xobj.readyState == 4 && xobj.status == "200") {
             // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
@@ -81,12 +82,12 @@ function processData(data, callback){
      jazzData,
      predictionResult,
      SAMPLES = 21
- loadJSON("../reources/data/hiphop.00053.json", function(response) {
+ loadJSON("reources/data/hiphop.00053.json", function(response) {
   // Parse JSON string into object
     hiphopData = JSON.parse(response);
  });
 
- loadJSON("../reources/data/jazz.00051.json", function(response) {
+ loadJSON("reources/data/jazz.00051.json", function(response) {
   // Parse JSON string into object
     jazzData = JSON.parse(response);
  });
