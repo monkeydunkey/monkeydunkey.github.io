@@ -7,6 +7,14 @@ body {
   color: #555;
 }
 
+figure {
+  margin-top: 10px;
+  margin-bottom: 10px
+}
+
+h4 p{
+  margin-left: 5px;
+}
 .code span{
   color:red;
 }
@@ -25,12 +33,14 @@ h2, .h2,
 h3, .h3,
 h4, .h4,
 h5, .h5,
-h6, .h6 {
+h6, .h6,
+figcaption {
   margin-top: 0;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: normal;
+  font-weight: bold;
   color: #333;
 }
+
 li{
     margin-bottom: 15px;
 }

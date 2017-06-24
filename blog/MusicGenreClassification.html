@@ -140,7 +140,7 @@
                     now. Finally before I start I am using <a href="http://marsyasweb.appspot.com/download/data_sets/">GTZAN</a> dataset for training my
                     neural network
                   </p>
-                  <h4>Feature Engineering - Mel Spectogram<h4>
+                  <h4>Feature Engineering - Mel Spectogram</h4>
                   <p>
                     The normal sampling rate of any audio sample is generaly 44100 Hz i.e. 44,100 samples are taken per second. If we were to give
                     raw audio clip like to we do for images and even if the clips are of size 100ms (this is what we will do a bit later),
@@ -166,7 +166,7 @@
                     As we can observe from the two spectograms there is obviously a difference between the two spectogram, which should be the case as
                     the two genre are quite different.
                   </p>
-                  <h4>Input Preperation<h4>
+                  <h4>Input Preperation</h4>
                   <p>
                     All the audio files in the GZTAN dataset are 30 seconds in length. One way would be to create spectogram on whole audio file. However,
                     as the GZTAN dataset contains only 1000 songs, that won't be enough to train the network. So, instead what I did was to take 100 ms
@@ -176,7 +176,7 @@
                     i.e. for each audio I calculated Mel Spectogram for only 599 windows. This was the most time consuming phase of this experiment
                     because even with an 3.4 Ghz Quad core i7, processing each file took approximately 120 seconds.
                   </p>
-                  <h4>Network Architecture<h4>
+                  <h4>Network Architecture</h4>
                   <p>
                   As we computed 599 windows over each of the file our dataset now has a shape of (1000, 599, 128, 5). If we take each of the window as
                   a sample then we have 599000 samples, which is more than enough to train a simple network. Before we proceed there is one more thing
