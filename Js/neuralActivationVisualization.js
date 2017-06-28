@@ -8,16 +8,17 @@ function sigmoid(X, w, b){
   return data
 }
 // Set the dimensions of the canvas / graph
-var margin = {top: 30, right: 10, bottom: 30, left: 10},
-    width = 300 - margin.left - margin.right,
-    height = 200 - margin.top - margin.bottom,
-    hiddenLayerWidth = 150 - margin.left - margin.right,
+var margin = {top: 30, right: 10, bottom: 30, left: 30},
+    width = 250,
+    height = 200,
+    hiddenLayerWidth = 150,
     x = d3.scale.linear().rangeRound([0, width]),
     y = d3.scale.linear().rangeRound([height, 0]),
     xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5),
     yAxis = d3.svg.axis().scale(y).orient("left").ticks(5),
     data = sigmoid([-100, 100], 2, 12),
     circleRadius = 20,
+    neurons = 3
     valueline = d3.svg.line().x(function(d) { return x(d.date); })
                             .y(function(d) { return y(d.close); });
 
@@ -51,13 +52,13 @@ actSvg.append("g")
     .call(yAxis);
 
 // Lets now add the circles for the neurons
-neuSvg = d3.select("#hiddenLayer")
+neuSvg = d3.select("#neurons")
     .append("svg")
         .attr("width", hiddenLayerWidth + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
     .append("g")
-        .attr("transform",
-              "translate(" + (margin.left + (hiddenLayerWidth - margin.left)/3) + "," + margin.top + ")")
+    .attr("transform", "translate(" + (((hiddenLayerWidth + margin.left + margin.right)/2)-2*circleRadius) + ",0)" )
+
 var jsonCircles = [
    { "x_axis": 30, "y_axis": 30, "radius": circleRadius, "color" : "green" },
    { "x_axis": 30, "y_axis": 80, "radius": circleRadius, "color" : "green"},
@@ -75,9 +76,7 @@ var circleAttributes = circles
                        .style("fill", function(d) { return d.color; });
 // ** Update data section (Called from the onclick)
 function updateData(e) {
-      console.log(typeof(e))
       var data = sigmoid([-100, 100], 2, parseInt(e));
-      console.log(data)
     	// Scale the range of the data again
     	x.domain(d3.extent(data, function(d) { return d.date; }));
 	    y.domain([0, d3.max(data, function(d) { return d.close; })]);
@@ -96,4 +95,26 @@ function updateData(e) {
             .duration(750)
             .call(yAxis);
 
+}
+
+function updateNeuron(addRemove){
+    var y_axis = jsonCircles[jsonCircles.length -1].y_axis + 50
+    if (addRemove == true){
+        neurons += 1
+        jsonCircles.push({ "x_axis": 30, "y_axis": y_axis,
+                           "radius": circleRadius, "color" : "green" })
+    } else {
+      neurons -= 1
+      jsonCircles.pop()
+    }
+
+    var circles = d3.select("#neurons g").selectAll("circle")
+                    .data(jsonCircles)
+    circles.enter()
+           .append("circle")
+           .attr("cx", function (d) { return d.x_axis; })
+           .attr("cy", function (d) { return d.y_axis; })
+           .attr("r", function (d) { return d.radius; })
+           .style("fill", function(d) { return d.color; });
+    circles.exit().remove()
 }
