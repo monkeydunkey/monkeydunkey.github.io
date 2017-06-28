@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Bootstrap core CSS -->
+<link href="../ThirdParty/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<style> /* set the CSS */
+
+body { font: 12px Arial;}
+
+path {
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+</style>
+<body>
+<div id="visualizationContainer" class="row">
+  <div id="hiddenLayer" class="col-md-2"></div>
+  <div id="activationOutput" class="col-md-5"></div>
+</div>
+<div id="option">
+  <input name="BiasUpdate"
+       type="text"
+       value="Update"
+       onchange="updateData(document.getElementsByName('BiasUpdate')[0].value)" />
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="../ThirdParty/bootstrap/js/bootstrap.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="../js/neuralActivationVisualization.js"></script>
+</body>
