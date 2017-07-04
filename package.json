@@ -22,5 +22,11 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/monkeydunkey/monkeydunkey.github.io.git"
+  },
+  "dependencies": {
+    "convnetjs": "^0.3.0",
+    "keras-js": "^0.3.0",
+    "mathjs": "^3.14.1",
+    "meyda": "^4.0.5"
   }
 }

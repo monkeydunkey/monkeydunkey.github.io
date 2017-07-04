@@ -22,6 +22,9 @@ gulp.task('copy', function() {
     gulp.src(['node_modules/bootstrap/dist/**/*', '!**/npm.js', '!**/bootstrap-theme.*', '!**/*.map'])
         .pipe(gulp.dest('ThirdParty/bootstrap'))
 
+    gulp.src(['node_modules/mathjs/dist/math.js'])
+        .pipe(gulp.dest('ThirdParty/mathjs'))
+
     gulp.src(['node_modules/jquery/dist/jquery.js', 'node_modules/jquery/dist/jquery.min.js'])
         .pipe(gulp.dest('ThirdParty/jquery'))
 
