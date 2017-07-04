@@ -1,61 +1,89 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<!-- Bootstrap core CSS -->
-<link href="../ThirdParty/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="../ThirdParty/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-<style> /* set the CSS */
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-96x96.png">
+  <title>Visualizing Neural Networks</title>
 
-body { font: 12px Arial;}
+  <!-- Bootstrap core CSS -->
+  <link href="../ThirdParty/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-path {
-    stroke: steelblue;
-    stroke-width: 2;
-    fill: none;
-}
+  <!-- Custom styles for this template -->
+  <link href="../CSS/blog.css" rel="stylesheet">
+  <link href="../ThirdParty/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <style> /* set the CSS */
 
-.axis path,
-.axis line {
-    fill: none;
-    stroke: grey;
-    stroke-width: 1;
-    shape-rendering: crispEdges;
-}
-#visualizationContainer{
-  min-width: 300px;
-  min-height: 250px;
-}
-#hiddenLayerControl{
-  min-height: 30px;
-}
+  body { font: 12px Arial;}
 
-#hiddenLayer{
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-#neurons{
-  overflow-y: scroll;
-}
-</style>
+  path {
+      stroke: steelblue;
+      stroke-width: 2;
+      fill: none;
+  }
+
+  .axis path,
+  .axis line {
+      fill: none;
+      stroke: grey;
+      stroke-width: 1;
+      shape-rendering: crispEdges;
+  }
+  #visualizationContainer{
+    min-width: 300px;
+    min-height: 250px;
+  }
+  #hiddenLayerControl{
+    min-height: 30px;
+
+  }
+  .layer{
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+  #neurons{
+    overflow-y: scroll;
+    text-align: center;
+  }
+  </style>
+</head>
+
 <body>
-<div id="container">
-  <div id="visualizationContainer" class="text-center">
-    <div id="hiddenLayer" class="col-md-1 text-center">
-      <div id="hiddenLayerControl">
-        <div class="col-md-1" onclick="updateNeuron(true)">
-          <i class="fa fa-plus-square" aria-hidden="true"></i>
-        </div>
-        <div class="col-md-1" onclick="updateNeuron(false)">
-          <i class="fa fa-minus-square" aria-hidden="true"></i>
-        </div>
-      </div>
-      <div id="neurons">
-      </div>
+  <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="../resources.html">Resources</a>
+        <a class="blog-nav-item" href="../Aboutme.html">About</a>
+      </nav>
     </div>
-    <div id="activationOutput" class="col-md-5"></div>
   </div>
-</div>
+  <div class="container">
+    <div id="visualizationContainer">
+      <div id="inputLayer" class="col-md-1 layer" >
+      </div>
+      <div id="hiddenLayer" class="col-md-4 layer" >
+        <div id="hiddenLayerControl">
+          <div class="col-md-6" style = "text-align:right;" onclick="updateNeuron(true)">
+            <i class="fa fa-plus-square" aria-hidden="true"></i>
+          </div>
+          <div class="col-md-6" onclick="updateNeuron(false)">
+            <i class="fa fa-minus-square" aria-hidden="true"></i>
+          </div>
+        </div>
+        <div id="neurons">
+        </div>
+      </div>
+      <div id="outputLayer" class="col-md-1 layer"></div>
+      <div id="activationOutput" class="col-md-6 layer"></div>
+    </div>
+  </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="../ThirdParty/bootstrap/js/bootstrap.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="../ThirdParty/mathjs/math.js" type="text/javascript"></script>
 <script src="../js/neuralActivationVisualization.js"></script>
 </body>
