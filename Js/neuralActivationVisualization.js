@@ -132,30 +132,41 @@ function drawNeurons(id){
                          .style("fill", function(d) { return d.color; });
 
   if (id === "#neurons"){
-      //Adding all the weights
-      var texts =   neuSvg.selectAll("text")
-                          .data(jsonCircles)
-                          .enter()
-                          .append("text");
       //
-      var textsAttributes = texts
-                              .attr("class", "weight")
-                              .attr("x", function(d) { return 0; })
-                              .attr("y", function(d) { return d.y_axis - d.radius/2; })
-                              .attr("dy", ".35em")
-                              .text(function(d) { return 2; });
-    //Adding the biases
-    var texts =   neuSvg.selectAll("text.bias")
-                        .data(jsonCircles)
-                        .enter()
-                        .append("text");
-    //
-    var textsAttributes = texts
-                            .attr("class", "bias")
-                            .attr("x", function(d) { return 0; })
-                            .attr("y", function(d) { return d.y_axis + d.radius/2; })
-                            .attr("dy", ".35em")
-                            .text(function(d) { return 12; });
+      //Weights
+      circles.each(function(d) {
+
+        // attribute
+        var cy = parseFloat(this.getAttribute('cy')),
+            radius = parseFloat(this.getAttribute('r'));
+
+        // **** foreignObject ****
+        var foreignObject = neuSvg.append('foreignObject')
+          .attr({
+            'x': 0,
+            'y': cy - (radius)
+          })
+
+        // div
+        var div = foreignObject.append('xhtml:div')
+          .html('<input class="weightInput" type="text" placeholder="2">')
+      })
+      //baises
+      circles.each(function(d) {
+
+        // attribute
+        var cy = parseFloat(this.getAttribute('cy')),
+            radius = parseFloat(this.getAttribute('r'));
+        // **** foreignObject ****
+        var foreignObject = neuSvg.append('foreignObject')
+          .attr({
+            'x': 0,
+            'y': cy + radius/4
+          });
+        // div
+        var div = foreignObject.append('xhtml:div')
+          .html('<input class="biasInput" type="text" placeholder="12">')
+      })
   }
 }
 
@@ -203,7 +214,7 @@ function updateNeuron(addRemove){
       y_axis += parseInt(divHeight / (numNeurons))
     }
     d3.selectAll("#neurons g circle").remove()
-    d3.selectAll("#neurons g text").remove()
+    d3.selectAll("#neurons g foreignObject").remove()
     var circles = d3.select("#neurons g").selectAll("circle")
                     .data(jsonCircles)
     circles.enter()
@@ -216,31 +227,39 @@ function updateNeuron(addRemove){
            .style("fill", function(d) { return d.color; });
     //circles.exit().remove()
     //
-    //Adding all the weights
-    var texts = d3.select("#neurons g").selectAll("text")
-                  .data(jsonCircles)
-                  .enter()
-                  .append("text");
-    //
-    var textsAttributes = texts
-                            .attr("class", "weight")
-                            .attr("x", function(d) { return 0; })
-                            .attr("y", function(d) { return d.y_axis - d.radius/2; })
-                            .attr("dy", ".35em")
-                            .text(function(d) { return 2; });
+    circles.each(function(d) {
 
-    //Adding the biases
-    var texts =   d3.select("#neurons g").selectAll("text.bias")
-                        .data(jsonCircles)
-                        .enter()
-                        .append("text");
-    //
-    var textsAttributes = texts
-                            .attr("class", "bias")
-                            .attr("x", function(d) { return 0; })
-                            .attr("y", function(d) { return d.y_axis + d.radius/2; })
-                            .attr("dy", ".35em")
-                            .text(function(d) { return 12; });
+      // attribute
+      var cy = parseFloat(this.getAttribute('cy')),
+          radius = parseFloat(this.getAttribute('r'));
+
+      // **** foreignObject ****
+      var foreignObject = d3.select("#neurons g").append('foreignObject')
+        .attr({
+          'x': 0,
+          'y': cy - (radius)
+        });
+
+      // div
+      var div = foreignObject.append('xhtml:div')
+        .html('<input class="weightInput" type="text" placeholder="2">')
+    })
+    //baises
+    circles.each(function(d) {
+
+      // attribute
+      var cy = parseFloat(this.getAttribute('cy')),
+          radius = parseFloat(this.getAttribute('r'));
+      // **** foreignObject ****
+      var foreignObject = d3.select("#neurons g").append('foreignObject')
+        .attr({
+          'x': 0,
+          'y': cy + radius/4
+        });
+      // div
+      var div = foreignObject.append('xhtml:div')
+        .html('<input class="biasInput" type="text" placeholder="12">')
+    })
 
     //Updating the output
     updateData()
