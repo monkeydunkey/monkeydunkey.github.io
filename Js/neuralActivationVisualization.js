@@ -132,33 +132,23 @@ function drawNeurons(id){
                          .style("fill", function(d) { return d.color; });
 
   if (id === "#neurons"){
-      //
-      //Weights
       circles.each(function(d) {
-
         // attribute
         var cy = parseFloat(this.getAttribute('cy')),
             radius = parseFloat(this.getAttribute('r'));
 
-        // **** foreignObject ****
+        // **** Weights ****
         var foreignObject = neuSvg.append('foreignObject')
           .attr({
             'x': 0,
             'y': cy - (radius)
           })
-
         // div
         var div = foreignObject.append('xhtml:div')
           .html('<input class="weightInput" type="text" placeholder="2">')
-      })
-      //baises
-      circles.each(function(d) {
 
-        // attribute
-        var cy = parseFloat(this.getAttribute('cy')),
-            radius = parseFloat(this.getAttribute('r'));
-        // **** foreignObject ****
-        var foreignObject = neuSvg.append('foreignObject')
+        // **** baises ****
+        var foreignObject = d3.select("#neurons g").append('foreignObject')
           .attr({
             'x': 0,
             'y': cy + radius/4
@@ -233,7 +223,7 @@ function updateNeuron(addRemove){
       var cy = parseFloat(this.getAttribute('cy')),
           radius = parseFloat(this.getAttribute('r'));
 
-      // **** foreignObject ****
+      // **** wights ****
       var foreignObject = d3.select("#neurons g").append('foreignObject')
         .attr({
           'x': 0,
@@ -243,14 +233,8 @@ function updateNeuron(addRemove){
       // div
       var div = foreignObject.append('xhtml:div')
         .html('<input class="weightInput" type="text" placeholder="2">')
-    })
-    //baises
-    circles.each(function(d) {
 
-      // attribute
-      var cy = parseFloat(this.getAttribute('cy')),
-          radius = parseFloat(this.getAttribute('r'));
-      // **** foreignObject ****
+      // **** baises ****
       var foreignObject = d3.select("#neurons g").append('foreignObject')
         .attr({
           'x': 0,
@@ -260,7 +244,6 @@ function updateNeuron(addRemove){
       var div = foreignObject.append('xhtml:div')
         .html('<input class="biasInput" type="text" placeholder="12">')
     })
-
     //Updating the output
     updateData()
 }
