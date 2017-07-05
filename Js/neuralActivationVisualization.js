@@ -114,7 +114,9 @@ function drawNeurons(id){
       circleRadiusLocal = y_axis;
   for (var i = 0; i < numNeurons; i++){
     jsonCircles.push({ "x_axis": svgWidth/2, "y_axis": y_axis,
-                       "radius": Math.min(circleRadius, circleRadiusLocal), "color" : "green" })
+                       "radius": Math.min(circleRadius, circleRadiusLocal),
+                       "color" : "#7413E8",
+                       "opacity": 0.35})
     y_axis += parseInt(divHeight / (numNeurons))
   }
 
@@ -129,7 +131,8 @@ function drawNeurons(id){
                          .attr("r", function (d) { return d.radius; })
                          .attr("data-inw", function (d) { return 2; })
                          .attr("data-inb", function (d) { return 12; })
-                         .style("fill", function(d) { return d.color; });
+                         .style("fill", function(d) { return d.color;})
+                         .style("opacity", function(d) { return d.opacity; });
 
   if (id === "#neurons"){
       circles.each(function(d) {
@@ -145,7 +148,7 @@ function drawNeurons(id){
           })
         // div
         var div = foreignObject.append('xhtml:div')
-          .html('<input class="weightInput" type="text" placeholder="2">')
+          .html('<input data-inw=2 class="weightInput" type="text" placeholder="2" onChange=updateWeight(this)> ')
 
         // **** baises ****
         var foreignObject = d3.select("#neurons g").append('foreignObject')
@@ -155,17 +158,17 @@ function drawNeurons(id){
           });
         // div
         var div = foreignObject.append('xhtml:div')
-          .html('<input class="biasInput" type="text" placeholder="12">')
+          .html('<input data-inb=12 class="biasInput" type="text" placeholder="12" onChange=updateBias(this)>')
       })
   }
 }
 
 // ** Update data section (Called from the onclick)
 function updateData() {
-      var weights = $("#neurons svg circle").map(function() {
+      var weights = $("#neurons svg foreignObject input").map(function() {
                     return $(this).data("inw");
                     }).get(),
-          bias = $("#neurons svg circle").map(function() {
+          bias = $("#neurons svg foreignObject input").map(function() {
                         return $(this).data("inb");
                         }).get(),
           range = [-100, 100],
@@ -200,7 +203,9 @@ function updateNeuron(addRemove){
 
     for (var i = 0; i < numNeurons; i++){
       jsonCircles.push({ "x_axis": parseInt(svgWidth/2), "y_axis": y_axis,
-                     "radius": Math.min(circleRadius, circleRadiusLocal), "color" : "green" })
+                     "radius": Math.min(circleRadius, circleRadiusLocal),
+                     "color" : "#7413E8",
+                     "opacity": 0.35})
       y_axis += parseInt(divHeight / (numNeurons))
     }
     d3.selectAll("#neurons g circle").remove()
@@ -214,7 +219,8 @@ function updateNeuron(addRemove){
            .attr("r", function (d) { return d.radius; })
            .attr("data-inw", function (d) { return 2; })
            .attr("data-inb", function (d) { return 12; })
-           .style("fill", function(d) { return d.color; });
+           .style("fill", function(d) { return d.color; })
+           .style("opacity", function(d) { return d.opacity; });
     //circles.exit().remove()
     //
     circles.each(function(d) {
@@ -232,7 +238,7 @@ function updateNeuron(addRemove){
 
       // div
       var div = foreignObject.append('xhtml:div')
-        .html('<input class="weightInput" type="text" placeholder="2">')
+        .html('<input data-inw=2 class="weightInput" type="text" placeholder="2" onChange=updateWeight(this)> ')
 
       // **** baises ****
       var foreignObject = d3.select("#neurons g").append('foreignObject')
@@ -242,12 +248,23 @@ function updateNeuron(addRemove){
         });
       // div
       var div = foreignObject.append('xhtml:div')
-        .html('<input class="biasInput" type="text" placeholder="12">')
+        .html('<input data-inb=12 class="biasInput" type="text" placeholder="12" onChange=updateBias(this)>')
     })
     //Updating the output
     updateData()
 }
 
+function updateBias(item){
+  var temp = parseInt($(item)[0].value)
+  $(item).data("inb", temp)
+  updateData()
+}
+
+function updateWeight(item){
+  var temp = parseInt($(item)[0].value)
+  $(item).data("inw", temp)
+  updateData()
+}
 drawNeurons("#neurons")
 drawNeurons("#inputLayer")
 drawNeurons("#outputLayer")
