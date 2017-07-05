@@ -8,7 +8,7 @@ function inverse(a){
 }
 function sigmoid(X, w, b){
 
-      range = [],
+  var range = [],
       multiRange = new Array(),
       data = [],
       bias = [],
@@ -21,8 +21,7 @@ function sigmoid(X, w, b){
   for (var k = 0; k < w.length; k++) {
       multiRange[k] = range
   }
-  console.log(math.matrix(bias).size())
-      biasMat = math.matrix(bias),
+  var biasMat = math.matrix(bias),
       dataTemp = math.add(1, math.exp(math.multiply(math.add(math.multiply(math.matrix(w), multiRange), biasMat), -1)))
   //Time to create the data in the required format
   dataTemp = dataTemp.toArray().map(inverse)
@@ -42,7 +41,7 @@ var margin = {top: 30, right: 10, bottom: 30, left: 30},
     y = d3.scale.linear().rangeRound([height, 0]),
     xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5),
     yAxis = d3.svg.axis().scale(y).orient("left").ticks(5),
-    data = sigmoid([-100, 100], [2, 2], [12, 12]),
+    data = sigmoid([-100, 100], [2, 2, 2], [12, 12, 12]),
     circleRadius = 20,
     neurons = 3
     valueline = d3.svg.line().x(function(d) { return x(d.date); })
@@ -128,18 +127,51 @@ function drawNeurons(id){
                          .attr("cx", function (d) { return d.x_axis; })
                          .attr("cy", function (d) { return d.y_axis; })
                          .attr("r", function (d) { return d.radius; })
+                         .attr("data-inw", function (d) { return 2; })
+                         .attr("data-inb", function (d) { return 12; })
                          .style("fill", function(d) { return d.color; });
+
+  if (id === "#neurons"){
+      //Adding all the weights
+      var texts =   neuSvg.selectAll("text")
+                          .data(jsonCircles)
+                          .enter()
+                          .append("text");
+      //
+      var textsAttributes = texts
+                              .attr("class", "weight")
+                              .attr("x", function(d) { return 0; })
+                              .attr("y", function(d) { return d.y_axis - d.radius/2; })
+                              .attr("dy", ".35em")
+                              .text(function(d) { return 2; });
+    //Adding the biases
+    var texts =   neuSvg.selectAll("text.bias")
+                        .data(jsonCircles)
+                        .enter()
+                        .append("text");
+    //
+    var textsAttributes = texts
+                            .attr("class", "bias")
+                            .attr("x", function(d) { return 0; })
+                            .attr("y", function(d) { return d.y_axis + d.radius/2; })
+                            .attr("dy", ".35em")
+                            .text(function(d) { return 12; });
+  }
 }
 
 // ** Update data section (Called from the onclick)
-function updateData(neurons) {
-      var range = [-100, 100],
-          data = []
-      var data = sigmoid([-100, 100], 2, parseInt(e));
+function updateData() {
+      var weights = $("#neurons svg circle").map(function() {
+                    return $(this).data("inw");
+                    }).get(),
+          bias = $("#neurons svg circle").map(function() {
+                        return $(this).data("inb");
+                        }).get(),
+          range = [-100, 100],
+          data = sigmoid([-100, 100], weights, bias);
     	// Scale the range of the data again
     	x.domain(d3.extent(data, function(d) { return d.date; }));
 	    y.domain([0, d3.max(data, function(d) { return d.close; })]);
-
     // Select the section we want to apply our changes to
     var svg = d3.select("body").transition();
 
@@ -171,6 +203,7 @@ function updateNeuron(addRemove){
       y_axis += parseInt(divHeight / (numNeurons))
     }
     d3.selectAll("#neurons g circle").remove()
+    d3.selectAll("#neurons g text").remove()
     var circles = d3.select("#neurons g").selectAll("circle")
                     .data(jsonCircles)
     circles.enter()
@@ -178,8 +211,39 @@ function updateNeuron(addRemove){
            .attr("cx", function (d) { return d.x_axis; })
            .attr("cy", function (d) { return d.y_axis; })
            .attr("r", function (d) { return d.radius; })
+           .attr("data-inw", function (d) { return 2; })
+           .attr("data-inb", function (d) { return 12; })
            .style("fill", function(d) { return d.color; });
-    circles.exit().remove()
+    //circles.exit().remove()
+    //
+    //Adding all the weights
+    var texts = d3.select("#neurons g").selectAll("text")
+                  .data(jsonCircles)
+                  .enter()
+                  .append("text");
+    //
+    var textsAttributes = texts
+                            .attr("class", "weight")
+                            .attr("x", function(d) { return 0; })
+                            .attr("y", function(d) { return d.y_axis - d.radius/2; })
+                            .attr("dy", ".35em")
+                            .text(function(d) { return 2; });
+
+    //Adding the biases
+    var texts =   d3.select("#neurons g").selectAll("text.bias")
+                        .data(jsonCircles)
+                        .enter()
+                        .append("text");
+    //
+    var textsAttributes = texts
+                            .attr("class", "bias")
+                            .attr("x", function(d) { return 0; })
+                            .attr("y", function(d) { return d.y_axis + d.radius/2; })
+                            .attr("dy", ".35em")
+                            .text(function(d) { return 12; });
+
+    //Updating the output
+    updateData()
 }
 
 drawNeurons("#neurons")
