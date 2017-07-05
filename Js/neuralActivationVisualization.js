@@ -6,26 +6,31 @@ function add(a, b) {
 function inverse(a){
   return 1/a;
 }
-function sigmoid(X, w, b){
+function sigmoid(X, w, b, wOut, bOut){
 
-  var range = [],
+   range = [[]],
       multiRange = new Array(),
       data = [],
-      bias = [],
-      biasSum = b.reduce(add, 0);;
+      biasOut = [],
+      biasSum = bOut.reduce(add, 0),
+      biasIn = [];
   for (var k = X[0]; k < X[1]; k++) {
-      range.push(0.1 * k)
-      bias.push(biasSum)
+      range[0].push(0.1 * k)
+      biasOut.push(biasSum)
+      biasIn.push(b)
   }
   //Stacking the ranges together to generate the input matrix
-  for (var k = 0; k < w.length; k++) {
-      multiRange[k] = range
-  }
-  var biasMat = math.matrix(bias),
-      dataTemp = math.add(1, math.exp(math.multiply(math.add(math.multiply(math.matrix(w), multiRange), biasMat), -1)))
+  //for (var k = 0; k < w.length; k++) {
+  //  multiRange[k] = range
+  //}
+  console.log(w)
+  console.log(math.multiply(math.transpose(math.matrix(range)), math.matrix([w])).size())
+   biasMat = math.matrix(biasIn),
+      dataTemp = math.add(1, math.exp(math.multiply(-1, math.add(math.multiply(math.transpose(math.matrix(range)), math.matrix([w])), biasMat))))
+  dataTemp = math.add(math.multiply(math.matrix(wOut), math.transpose(dataTemp)), biasOut)
   //Time to create the data in the required format
   dataTemp = dataTemp.toArray().map(inverse)
-  var ind = 0
+   ind = 0
   for (var k = X[0]; k < X[1]; k++){
       data.push({date: 0.1 * k, close: dataTemp[ind]});
       ind += 1
@@ -41,7 +46,7 @@ var margin = {top: 30, right: 10, bottom: 30, left: 30},
     y = d3.scale.linear().rangeRound([height, 0]),
     xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5),
     yAxis = d3.svg.axis().scale(y).orient("left").ticks(5),
-    data = sigmoid([-100, 100], [2, 2, 2], [12, 12, 12]),
+    data = sigmoid([-100, 100], [2, 2, 2], [12, 12, 12], [2, 2, 2], [12, 12, 12]),
     circleRadius = 20,
     neurons = 3
     valueline = d3.svg.line().x(function(d) { return x(d.date); })
@@ -129,8 +134,6 @@ function drawNeurons(id){
                          .attr("cx", function (d) { return d.x_axis; })
                          .attr("cy", function (d) { return d.y_axis; })
                          .attr("r", function (d) { return d.radius; })
-                         .attr("data-inw", function (d) { return 2; })
-                         .attr("data-inb", function (d) { return 12; })
                          .style("fill", function(d) { return d.color;})
                          .style("opacity", function(d) { return d.opacity; });
 
@@ -148,7 +151,7 @@ function drawNeurons(id){
           })
         // div
         var div = foreignObject.append('xhtml:div')
-          .html('<input data-inw=2 class="weightInput" type="text" placeholder="2" onChange=updateWeight(this)> ')
+          .html('<input data-inw=2 class="weightInput" type="text" value="2" onChange=updateWeight(this)> ')
 
         // **** baises ****
         var foreignObject = d3.select("#neurons g").append('foreignObject')
@@ -158,7 +161,27 @@ function drawNeurons(id){
           });
         // div
         var div = foreignObject.append('xhtml:div')
-          .html('<input data-inb=12 class="biasInput" type="text" placeholder="12" onChange=updateBias(this)>')
+          .html('<input data-inb=12 class="biasInput" type="text" value="12" onChange=updateBias(this)>')
+
+        // **** Out Weights ****
+        var foreignObject = neuSvg.append('foreignObject')
+          .attr({
+            'x': layerWidth - margin.left,
+            'y': cy - (radius)
+          })
+        // div
+        var div = foreignObject.append('xhtml:div')
+          .html('<input data-inwo=2 class="weightInput" type="text" value="2" onChange=updateWeight(this)> ')
+
+        // ****Out baises ****
+        var foreignObject = neuSvg.append('foreignObject')
+          .attr({
+            'x': layerWidth - margin.left,
+            'y': cy + radius/4
+          });
+        // div
+        var div = foreignObject.append('xhtml:div')
+          .html('<input data-inbo=12 class="biasInput" type="text" value="12" onChange=updateBias(this)>')
       })
   }
 }
@@ -171,8 +194,14 @@ function updateData() {
           bias = $("#neurons svg foreignObject input").map(function() {
                         return $(this).data("inb");
                         }).get(),
+          weightsOut = $("#neurons svg foreignObject input").map(function() {
+                        return $(this).data("inwo");
+                        }).get(),
+          biasOut = $("#neurons svg foreignObject input").map(function() {
+                            return $(this).data("inbo");
+                            }).get(),
           range = [-100, 100],
-          data = sigmoid([-100, 100], weights, bias);
+          data = sigmoid([-100, 100], weights, bias, weightsOut, biasOut);
     	// Scale the range of the data again
     	x.domain(d3.extent(data, function(d) { return d.date; }));
 	    y.domain([0, d3.max(data, function(d) { return d.close; })]);
@@ -217,8 +246,6 @@ function updateNeuron(addRemove){
            .attr("cx", function (d) { return d.x_axis; })
            .attr("cy", function (d) { return d.y_axis; })
            .attr("r", function (d) { return d.radius; })
-           .attr("data-inw", function (d) { return 2; })
-           .attr("data-inb", function (d) { return 12; })
            .style("fill", function(d) { return d.color; })
            .style("opacity", function(d) { return d.opacity; });
     //circles.exit().remove()
@@ -238,7 +265,7 @@ function updateNeuron(addRemove){
 
       // div
       var div = foreignObject.append('xhtml:div')
-        .html('<input data-inw=2 class="weightInput" type="text" placeholder="2" onChange=updateWeight(this)> ')
+        .html('<input data-inw=2 class="weightInput" type="text" value="2" onChange=updateWeight(this)> ')
 
       // **** baises ****
       var foreignObject = d3.select("#neurons g").append('foreignObject')
@@ -248,23 +275,56 @@ function updateNeuron(addRemove){
         });
       // div
       var div = foreignObject.append('xhtml:div')
-        .html('<input data-inb=12 class="biasInput" type="text" placeholder="12" onChange=updateBias(this)>')
+        .html('<input data-inb=12 class="biasInput" type="text" value="12" onChange=updateBias(this)>')
+
+     // **** Out Weights ****
+     var foreignObject = d3.select("#neurons g").append('foreignObject')
+       .attr({
+         'x': svgWidth - margin.left,
+         'y': cy - (radius)
+       })
+     // div
+     var div = foreignObject.append('xhtml:div')
+       .html('<input data-inwo=2 class="weightInput" type="text" value="2" onChange=updateWeight(this)> ')
+
+     // ****Out baises ****
+     var foreignObject = d3.select("#neurons g").append('foreignObject')
+       .attr({
+         'x': svgWidth - margin.left,
+         'y': cy + radius/4
+       });
+     // div
+     var div = foreignObject.append('xhtml:div')
+       .html('<input data-inbo=12 class="biasInput" type="text" value="12" onChange=updateBias(this)>')
+
     })
+
+
     //Updating the output
     updateData()
 }
 
 function updateBias(item){
   var temp = parseInt($(item)[0].value)
-  $(item).data("inb", temp)
+  if ($(item).data("inb")){
+      $(item).data("inb", temp)
+  } else {
+    $(item).data("inbo", temp)
+  }
   updateData()
 }
 
 function updateWeight(item){
   var temp = parseInt($(item)[0].value)
-  $(item).data("inw", temp)
+  if ($(item).data("inw")){
+      $(item).data("inw", temp)
+  } else {
+    $(item).data("inwo", temp)
+  }
+
   updateData()
 }
+
 drawNeurons("#neurons")
 drawNeurons("#inputLayer")
 drawNeurons("#outputLayer")
