@@ -229,6 +229,11 @@ function updateNeuron(addRemove){
         stepSize = parseInt(divHeight / numNeurons),
         y_axis = stepSize / 2,
         circleRadiusLocal = y_axis;
+    //Adding some more space to handle more neurons
+    if (numNeurons > 5){
+      $("#neurons svg").attr("height", divHeight + 60)
+      divHeight += 60
+    }
 
     for (var i = 0; i < numNeurons; i++){
       jsonCircles.push({ "x_axis": parseInt(svgWidth/2), "y_axis": y_axis,
