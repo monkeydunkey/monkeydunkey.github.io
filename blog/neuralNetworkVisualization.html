@@ -73,23 +73,7 @@
   </div>
   <div class="container">
     <div id="visualizationContainer" class="col-sm-12">
-      <div id="inputLayer" class="col-sm-1 layer" >
-      </div>
-      <div id="hiddenLayer" class="col-sm-3 layer" >
-        <div id="hiddenLayerControl" class="row">
-          <div class ="col-sm-12">
-          <div style = "float: left;" onclick="updateNeuron(true)">
-            <i class="fa fa-plus-square" aria-hidden="true"></i>
-          </div>
-          <div style = "float: left;" onclick="updateNeuron(false)">
-            <i class="fa fa-minus-square" aria-hidden="true"></i>
-          </div>
-        </div>
-        </div>
-        <div id="neurons">
-        </div>
-      </div>
-      <div id="outputLayer" class="col-sm-1 layer"></div>
+      <div id="neuralNetwork" class="col-sm-6 layer"></div>
       <div id="activationOutput" class="col-sm-6 layer"></div>
     </div>
   </div>
@@ -97,5 +81,5 @@
 <script src="../ThirdParty/bootstrap/js/bootstrap.min.js"></script>
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="../ThirdParty/mathjs/math.js" type="text/javascript"></script>
-<script src="../Js/neuralActivationVisualization.js"></script>
+<script src="../Js/neuralVisualization.js"></script>
 </body>

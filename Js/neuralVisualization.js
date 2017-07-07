@@ -39,7 +39,7 @@ function sigmoid(X, w, b, wOut, bOut){
 var margin = {top: 30, right: 10, bottom: 30, left: 30},
     width = 250,
     height = 200,
-    hiddenLayerWidth = 75,
+    hiddenLayerWidth = 340,
     x = d3.scale.linear().rangeRound([0, width]),
     y = d3.scale.linear().rangeRound([height, 0]),
     xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5),
@@ -82,106 +82,69 @@ actSvg.append("g")
     .attr("class", "y axis")
     .call(yAxis);
 
-// Lets now add the circles for the neurons
-function drawNeurons(id){
-  var numNeurons = 0,
-      divHeight = height - 30;
-      layerWidth = hiddenLayerWidth
-  switch(id){
-    case "#neurons":
-      numNeurons = 3
-      layerWidth += (margin.left + margin.right)
-      break
-    case "#inputLayer":
-    case "#outputLayer":
-      numNeurons = 1
-      divHeight += 60
-      layerWidth = (layerWidth/2) + ((margin.left + margin.right) / 4)
-    default:
-      numNeurons = 1
-  }
-  var neuSvg = d3.select(id)
-      .append("svg")
-          .attr("width", layerWidth)
-          .attr("height", divHeight + margin.top + margin.bottom)
-      .append("g");
-      //.attr("transform", "translate(" + (((hiddenLayerWidth + margin.left + margin.right)/2)-2*circleRadius) + ",0)" )
-
-  //
-
-  divHeight += margin.top + margin.bottom
-  var svgWidth = layerWidth
+// Lets now add canvas for the neurons
+function drawNN(){
+  var inOutNeurons = 1,
+      divHeight = height - 30 + margin.top + margin.bottom,
+      numNeurons = 3,
+      layerWidth = hiddenLayerWidth,
+      svgWidth = layerWidth,
       jsonCircles = [],
       stepSize = parseInt(divHeight / numNeurons),
       y_axis = stepSize / 2,
       circleRadiusLocal = y_axis;
-  for (var i = 0; i < numNeurons; i++){
-    jsonCircles.push({ "x_axis": svgWidth/2, "y_axis": y_axis,
-                       "radius": Math.min(circleRadius, circleRadiusLocal),
-                       "color" : "#7413E8",
-                       "opacity": 0.35})
-    y_axis += parseInt(divHeight / (numNeurons))
+
+  var neuSvg = d3.select("#neuralNetwork")
+      .append("svg")
+          .attr("width", layerWidth)
+          .attr("height", divHeight)
+      .append("g")
+          .attr("class", "neuralNetworkContainer");
+
+  var inputLayer = neuSvg.append("g")
+                          .attr("class", "inputLayer");
+
+  var hiddenLayer = neuSvg.append("g")
+                          .attr("class", "hiddenLayer");
+
+  var outputLayer = neuSvg.append("g")
+                          .attr("class", "outputLayer");
+
+  //Currently the factors are 1/4, 2/4 and 1/4
+  drawLayer(inputLayer, svgWidth*(1/4), divHeight, 1, 0)
+  drawLayer(hiddenLayer, svgWidth*(2/4), divHeight, 3, svgWidth*(1/4))
+  drawLayer(hiddenLayer, svgWidth*(3/4), divHeight, 1, svgWidth*(2/4))
+}
+
+function drawLayer(layer, layerWidth, layerHeight, numNeurons, start_x){
+  var canvasWidth = 30,
+      canvasHeight = Math.min(30, layerHeight/numNeurons);
+      canvas_x = start_x + (layerWidth/4),
+      stepSize = layerHeight/numNeurons,
+      canvas_y = stepSize/2;
+
+  for (var i=0; i<numNeurons; i++){
+    drawNeuron(layer, canvas_x, canvas_y, canvasWidth, canvasHeight)
+    canvas_y += stepSize
   }
+}
 
-  var circles = neuSvg.selectAll("circle")
-                            .data(jsonCircles)
-                            .enter()
-                            .append("circle");
-
-  var circleAttributes = circles
-                         .attr("cx", function (d) { return d.x_axis; })
-                         .attr("cy", function (d) { return d.y_axis; })
-                         .attr("r", function (d) { return d.radius; })
-                         .style("fill", function(d) { return d.color;})
-                         .style("opacity", function(d) { return d.opacity; });
-
-  if (id === "#neurons"){
-      circles.each(function(d) {
-        // attribute
-        var cy = parseFloat(this.getAttribute('cy')),
-            radius = parseFloat(this.getAttribute('r'));
-
-        // **** Weights ****
-        var foreignObject = neuSvg.append('foreignObject')
-          .attr({
-            'x': 0,
-            'y': cy - (radius)
-          })
-        // div
-        var div = foreignObject.append('xhtml:div')
-          .html('<input data-inw=2 class="weightInput" type="text" value="2" onChange=updateWeight(this)> ')
-
-        // **** baises ****
-        var foreignObject = d3.select("#neurons g").append('foreignObject')
-          .attr({
-            'x': 0,
-            'y': cy + radius/4
-          });
-        // div
-        var div = foreignObject.append('xhtml:div')
-          .html('<input data-inb=12 class="biasInput" type="text" value="12" onChange=updateBias(this)>')
-
-        // **** Out Weights ****
-        var foreignObject = neuSvg.append('foreignObject')
-          .attr({
-            'x': layerWidth - margin.left,
-            'y': cy - (radius)
-          })
-        // div
-        var div = foreignObject.append('xhtml:div')
-          .html('<input data-inwo=2 class="weightInput" type="text" value="2" onChange=updateWeight(this)> ')
-
-        // ****Out baises ****
-        var foreignObject = neuSvg.append('foreignObject')
-          .attr({
-            'x': layerWidth - margin.left,
-            'y': cy + radius/4
-          });
-        // div
-        var div = foreignObject.append('xhtml:div')
-          .html('<input data-inbo=12 class="biasInput" type="text" value="12" onChange=updateBias(this)>')
-      })
-  }
+function drawNeuron(svg, x_coord, y_coord, width, height){
+  svg.append("rect")
+  .attr(
+    {
+      "x": x_coord,
+      "y": y_coord,
+      "height": height,
+      "width": width,
+      "rx": 2,
+      "ry": 2,
+    })
+  .style({
+    "fill": "none",
+    "stroke-width": 3,
+    "stroke": "#009900"
+  });
 }
 
 // ** Update data section (Called from the onclick)
@@ -328,6 +291,4 @@ function updateWeight(item){
   updateData()
 }
 
-drawNeurons("#neurons")
-drawNeurons("#inputLayer")
-drawNeurons("#outputLayer")
+drawNN()
