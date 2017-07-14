@@ -85,7 +85,7 @@ actSvg.append("g")
 // Lets now add canvas for the neurons
 function drawNN(){
   var inOutNeurons = 1,
-      divHeight = height - 30 + margin.top + margin.bottom,
+      divHeight = height + margin.top + margin.bottom,
       numNeurons = 3,
       layerWidth = hiddenLayerWidth,
       svgWidth = layerWidth,
@@ -113,7 +113,27 @@ function drawNN(){
   //Currently the factors are 1/4, 2/4 and 1/4
   drawLayer(inputLayer, svgWidth*(1/4), divHeight, 1, 0)
   drawLayer(hiddenLayer, svgWidth*(2/4), divHeight, 3, svgWidth*(1/4))
-  drawLayer(hiddenLayer, svgWidth*(3/4), divHeight, 1, svgWidth*(2/4))
+  drawLayer(outputLayer, svgWidth*(3/4), divHeight, 1, svgWidth*(2/4))
+  drawControl(hiddenLayer, svgWidth*(2/4), divHeight, svgWidth*(1/4))
+}
+
+function drawControl(layer, layerWidth, layerHeight, start_x){
+  //Adding the plus symbol
+  layer.append('text')
+    .attr('font-family', 'FontAwesome')
+    .attr("x", start_x + layerWidth/2 - 38)
+    .attr("y", 20)
+    .attr('font-size', '1.5em')
+    .attr('text-anchor', 'middle')
+    .text(function(d) { return '\uf055' });
+
+  layer.append('text')
+    .attr('font-family', 'FontAwesome')
+    .attr("x", start_x + layerWidth/2 - 18 )
+    .attr("y", 20)
+    .attr('font-size', '1.5em')
+    .attr('text-anchor', 'middle')
+    .text(function(d) { return '\uf056' });
 }
 
 function drawLayer(layer, layerWidth, layerHeight, numNeurons, start_x){
