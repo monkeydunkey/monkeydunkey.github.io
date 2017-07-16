@@ -115,6 +115,7 @@ function drawNN(){
   drawLayer(hiddenLayer, svgWidth*(2/4), divHeight, 3, svgWidth*(1/4))
   drawLayer(outputLayer, svgWidth*(3/4), divHeight, 1, svgWidth*(2/4))
   drawControl(hiddenLayer, svgWidth*(2/4), divHeight, svgWidth*(1/4))
+  drawWeightLines([".inputLayer", ".hiddenLayer", ".outputLayer"])
 }
 
 function drawControl(layer, layerWidth, layerHeight, start_x){
@@ -125,14 +126,19 @@ function drawControl(layer, layerWidth, layerHeight, start_x){
     .attr("y", 20)
     .attr('font-size', '1.5em')
     .attr('text-anchor', 'middle')
+    .attr('id', 'addNeuron')
+    .attr('onclick', "updateNeuron(true)")
     .text(function(d) { return '\uf055' });
 
+  //Adding the minus symbol
   layer.append('text')
     .attr('font-family', 'FontAwesome')
     .attr("x", start_x + layerWidth/2 - 18 )
     .attr("y", 20)
     .attr('font-size', '1.5em')
     .attr('text-anchor', 'middle')
+    .attr('id', 'removeNeuron')
+    .attr('onclick', "updateNeuron(false)")
     .text(function(d) { return '\uf056' });
 }
 
@@ -167,6 +173,80 @@ function drawNeuron(svg, x_coord, y_coord, width, height){
   });
 }
 
+function generateLineData(x1, y1, x2, y2, step){
+    /*
+    y1 = -y1;
+    y2 = -y2;
+    var slope = ((y1 - y2) / (x2 - x1)),
+        con = y2 - slope*(x2),
+        data = [];
+    for(var x = x1; x <= x2; x+=step){
+      data.push({'x': x, 'y': -(slope * x + con) })
+    }*/
+    return [{'x': x1, 'y':y1},
+            {'x': x2, 'y':y2}]
+}
+
+function lineBetweenPoints(x1, y1, x2, y2){
+  var lineData = generateLineData(x1, y1, x2, y2, 10),
+      svg = d3.select("#neuralNetwork svg"),
+      lineFunction = d3.svg.line()
+          .x(function (d) {
+              return d.x;
+          })
+          .y(function (d) {
+              return d.y;
+          })
+          .interpolate("linear");
+  svg.append("path")
+          .attr("d", lineFunction(lineData))
+          .attr("data-weight", 12)
+          .attr("class", "line-hover")
+
+          .style("stroke-width", 5)
+          .style("stroke-dasharray", ("1, 1"))
+          .on("mouseover", function () {
+              d3.select(this)
+                      .style("stroke", "orange");
+          })
+          .on("mouseout", function () {
+              d3.select(this)
+                      .style("stroke", "rgb(6,120,155)");
+          }).on("mouseenter", function() {
+            updateHoverCard("WEIGHT", this, d3.mouse(this));
+          }).on("mouseleave", function() {
+            updateHoverCard(null);
+          });;
+}
+
+function drawLineBetweenLayers(fromLayer, toLayer){
+  var fromRects = $(fromLayer + " rect"),
+      outRects = $(toLayer + " rect"),
+      fromX, fromY, toX, toY;
+  for (var i = 0; i < fromRects.length; i++){
+    for (var j = 0; j < outRects.length; j++){
+        rect = fromRects[i]
+        toRect = outRects[j]
+        fromX = parseFloat($(rect).attr('x')) + parseFloat($(rect).attr('width'))
+        toX = parseFloat($(toRect).attr('x'))
+
+        fromY = parseFloat($(rect).attr('y')) + parseFloat($(rect).attr('height')) / 2
+        toY = parseFloat($(toRect).attr('y')) + parseFloat($(toRect).attr('height')) / 2
+        lineBetweenPoints(fromX, fromY, toX, toY)
+    }
+  }
+
+}
+//Assumed the layers are input hidden output
+function drawWeightLines(layers){
+  if (layers.length != 3){
+    console.log('ERROR: incorrect number of layer', layers.length)
+    return
+  }
+  drawLineBetweenLayers(layers[0], layers[1])
+  drawLineBetweenLayers(layers[1], layers[2])
+
+}
 // ** Update data section (Called from the onclick)
 function updateData() {
       var weights = $("#neurons svg foreignObject input").map(function() {
@@ -203,91 +283,19 @@ function updateData() {
 }
 
 function updateNeuron(addRemove){
-    var jsonCircles = [],
-        divHeight = $("#neurons svg")[0].scrollHeight,
-        svgWidth = $("#neurons svg")[0].scrollWidth,
-        numNeurons = addRemove ? 1 + $("#neurons svg circle").length : $("#neurons svg circle").length - 1,
-        stepSize = parseInt(divHeight / numNeurons),
-        y_axis = stepSize / 2,
-        circleRadiusLocal = y_axis;
-    //Adding some more space to handle more neurons
-    if (numNeurons > 5){
-      $("#neurons svg").attr("height", divHeight + 60)
-      divHeight += 60
+    var hiddenLayer = d3.select("#neuralNetwork .hiddenLayer"),
+        neurons = $("#neuralNetwork .hiddenLayer rect").length,
+        svgWidth = hiddenLayerWidth,
+        divHeight = height + margin.top + margin.bottom;
+    hiddenLayer.selectAll("rect").remove()
+    d3.selectAll("#neuralNetwork path").remove()
+    if (addRemove){
+      drawLayer(hiddenLayer, svgWidth*(2/4), divHeight, neurons + 1, svgWidth*(1/4))
     }
-
-    for (var i = 0; i < numNeurons; i++){
-      jsonCircles.push({ "x_axis": parseInt(svgWidth/2), "y_axis": y_axis,
-                     "radius": Math.min(circleRadius, circleRadiusLocal),
-                     "color" : "#7413E8",
-                     "opacity": 0.35})
-      y_axis += parseInt(divHeight / (numNeurons))
+    else {
+      drawLayer(hiddenLayer, svgWidth*(2/4), divHeight, neurons - 1, svgWidth*(1/4))
     }
-    d3.selectAll("#neurons g circle").remove()
-    d3.selectAll("#neurons g foreignObject").remove()
-    var circles = d3.select("#neurons g").selectAll("circle")
-                    .data(jsonCircles)
-    circles.enter()
-           .append("circle")
-           .attr("cx", function (d) { return d.x_axis; })
-           .attr("cy", function (d) { return d.y_axis; })
-           .attr("r", function (d) { return d.radius; })
-           .style("fill", function(d) { return d.color; })
-           .style("opacity", function(d) { return d.opacity; });
-    //circles.exit().remove()
-    //
-    circles.each(function(d) {
-
-      // attribute
-      var cy = parseFloat(this.getAttribute('cy')),
-          radius = parseFloat(this.getAttribute('r'));
-
-      // **** wights ****
-      var foreignObject = d3.select("#neurons g").append('foreignObject')
-        .attr({
-          'x': 0,
-          'y': cy - (radius)
-        });
-
-      // div
-      var div = foreignObject.append('xhtml:div')
-        .html('<input data-inw=2 class="weightInput" type="text" value="2" onChange=updateWeight(this)> ')
-
-      // **** baises ****
-      var foreignObject = d3.select("#neurons g").append('foreignObject')
-        .attr({
-          'x': 0,
-          'y': cy + radius/4
-        });
-      // div
-      var div = foreignObject.append('xhtml:div')
-        .html('<input data-inb=12 class="biasInput" type="text" value="12" onChange=updateBias(this)>')
-
-     // **** Out Weights ****
-     var foreignObject = d3.select("#neurons g").append('foreignObject')
-       .attr({
-         'x': svgWidth - margin.left,
-         'y': cy - (radius)
-       })
-     // div
-     var div = foreignObject.append('xhtml:div')
-       .html('<input data-inwo=2 class="weightInput" type="text" value="2" onChange=updateWeight(this)> ')
-
-     // ****Out baises ****
-     var foreignObject = d3.select("#neurons g").append('foreignObject')
-       .attr({
-         'x': svgWidth - margin.left,
-         'y': cy + radius/4
-       });
-     // div
-     var div = foreignObject.append('xhtml:div')
-       .html('<input data-inbo=12 class="biasInput" type="text" value="12" onChange=updateBias(this)>')
-
-    })
-
-
-    //Updating the output
-    updateData()
+    drawWeightLines([".inputLayer", ".hiddenLayer", ".outputLayer"])
 }
 
 function updateBias(item){
@@ -312,3 +320,49 @@ function updateWeight(item){
 }
 
 drawNN()
+
+function updateHoverCard(type, nodeOrLink,coordinates) {
+  var hovercard = d3.select("#hovercard");
+  if (type == null) {
+    hovercard.style("display", "none");
+    d3.select("#svg").on("click", null);
+    return;
+  }
+  d3.select("#svg").on("click", () => {
+    hovercard.select(".value").style("display", "none");
+    var input = hovercard.select("input");
+    input.style("display", null);
+    input.on("input", function() {
+      if (this.value != null && this.value !== "") {
+        if (type === "WEIGHT") {
+          $(nodeOrLink).data("weight") = +this.value;
+        } else {
+          $(nodeOrLink).data("bias") = +this.value;
+        }
+        //updateUI();
+      }
+    });
+    input.on("keypress", () => {
+      if (d3.event.keyCode === 13) {
+        updateHoverCard(type, nodeOrLink, coordinates);
+      }
+    });
+    input.node().focus();
+  });
+  var value = (type === "WEIGHT") ?
+    $(nodeOrLink).data("weight") :
+    $(nodeOrLink).data("bias");
+  var name = (type === "WEIGHT") ? "Weight" : "Bias";
+  hovercard.style({
+    "left": `${coordinates[0] + 20}px`,
+    "top": `${coordinates[1]}px`,
+    "display": "block"
+  });
+  hovercard.select(".type").text(name);
+  hovercard.select(".value")
+    .style("display", null)
+    .text(value.toPrecision(2));
+  hovercard.select("input")
+    .property("value", value.toPrecision(2))
+    .style("display", "none");
+}
