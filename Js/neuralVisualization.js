@@ -328,16 +328,16 @@ function updateHoverCard(type, nodeOrLink,coordinates) {
     d3.select("#svg").on("click", null);
     return;
   }
-  d3.select("#svg").on("click", () => {
+  d3.select("#neuralNetwork svg").on("click", () => {
     hovercard.select(".value").style("display", "none");
     var input = hovercard.select("input");
     input.style("display", null);
     input.on("input", function() {
       if (this.value != null && this.value !== "") {
         if (type === "WEIGHT") {
-          $(nodeOrLink).data("weight") = +this.value;
+          $(nodeOrLink).data("weight", +this.value);
         } else {
-          $(nodeOrLink).data("bias") = +this.value;
+          $(nodeOrLink).data("bias", +this.value);
         }
         //updateUI();
       }
