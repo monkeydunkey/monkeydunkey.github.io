@@ -6,6 +6,7 @@ function add(a, b) {
 function inverse(a){
   return 1/a;
 }
+
 function sigmoid(X, w, b, wOut, bOut){
 
    range = [[]],
@@ -116,6 +117,7 @@ function drawNN(){
   drawLayer(outputLayer, svgWidth*(3/4), divHeight, 1, svgWidth*(2/4))
   drawControl(hiddenLayer, svgWidth*(2/4), divHeight, svgWidth*(1/4))
   drawWeightLines([".inputLayer", ".hiddenLayer", ".outputLayer"])
+  drawBias(hiddenLayer, svgWidth*(2/4), divHeight, 3, svgWidth*(1/4))
 }
 
 function drawControl(layer, layerWidth, layerHeight, start_x){
@@ -142,6 +144,19 @@ function drawControl(layer, layerWidth, layerHeight, start_x){
     .text(function(d) { return '\uf056' });
 }
 
+function drawBias(layer, layerWidth, layerHeight, numNeurons, start_x){
+  var canvasWidth = 30,
+      canvasHeight = Math.min(30, layerHeight/numNeurons);
+      canvas_x = start_x + (layerWidth/4),
+      stepSize = layerHeight/numNeurons,
+      canvas_y = stepSize/2;
+
+  for (var i=0; i<numNeurons; i++){
+    drawNeuron(layer, canvas_x , canvas_y + canvasHeight + 4, 2, 2, true, "in")
+    drawNeuron(layer, canvas_x - 2 + canvasWidth, canvas_y + canvasHeight + 4, 2, 2, true, "out")
+    canvas_y += stepSize
+  }
+}
 function drawLayer(layer, layerWidth, layerHeight, numNeurons, start_x){
   var canvasWidth = 30,
       canvasHeight = Math.min(30, layerHeight/numNeurons);
@@ -155,8 +170,8 @@ function drawLayer(layer, layerWidth, layerHeight, numNeurons, start_x){
   }
 }
 
-function drawNeuron(svg, x_coord, y_coord, width, height){
-  svg.append("rect")
+function drawNeuron(svg, x_coord, y_coord, width, height, bias=false, inOutBias=""){
+  rect = svg.append("rect")
   .attr(
     {
       "x": x_coord,
@@ -164,13 +179,26 @@ function drawNeuron(svg, x_coord, y_coord, width, height){
       "height": height,
       "width": width,
       "rx": 2,
-      "ry": 2,
+      "ry": 2
     })
   .style({
     "fill": "none",
     "stroke-width": 3,
     "stroke": "#009900"
   });
+  if (bias){
+  rect.attr(
+      {
+        "class": "bias",
+        "data-type": inOutBias,
+        "data-bias": 1
+      })
+      .on("mouseenter", function() {
+        updateHoverCard("BIAS", this, d3.mouse(this));
+      }).on("mouseleave", function() {
+        updateHoverCard(null);
+      });
+  }
 }
 
 function generateLineData(x1, y1, x2, y2, step){
@@ -187,7 +215,7 @@ function generateLineData(x1, y1, x2, y2, step){
             {'x': x2, 'y':y2}]
 }
 
-function lineBetweenPoints(x1, y1, x2, y2){
+function lineBetweenPoints(x1, y1, x2, y2, type){
   var lineData = generateLineData(x1, y1, x2, y2, 10),
       svg = d3.select("#neuralNetwork svg"),
       lineFunction = d3.svg.line()
@@ -200,11 +228,12 @@ function lineBetweenPoints(x1, y1, x2, y2){
           .interpolate("linear");
   svg.append("path")
           .attr("d", lineFunction(lineData))
-          .attr("data-weight", 12)
+          .attr("data-weight", 5)
+          .attr("data-type", type)
           .attr("class", "line-hover")
 
           .style("stroke-width", 5)
-          .style("stroke-dasharray", ("1, 1"))
+          .style("stroke-dasharray", ("5, 1"))
           .on("mouseover", function () {
               d3.select(this)
                       .style("stroke", "orange");
@@ -216,10 +245,10 @@ function lineBetweenPoints(x1, y1, x2, y2){
             updateHoverCard("WEIGHT", this, d3.mouse(this));
           }).on("mouseleave", function() {
             updateHoverCard(null);
-          });;
+          });
 }
 
-function drawLineBetweenLayers(fromLayer, toLayer){
+function drawLineBetweenLayers(fromLayer, toLayer, type){
   var fromRects = $(fromLayer + " rect"),
       outRects = $(toLayer + " rect"),
       fromX, fromY, toX, toY;
@@ -232,7 +261,7 @@ function drawLineBetweenLayers(fromLayer, toLayer){
 
         fromY = parseFloat($(rect).attr('y')) + parseFloat($(rect).attr('height')) / 2
         toY = parseFloat($(toRect).attr('y')) + parseFloat($(toRect).attr('height')) / 2
-        lineBetweenPoints(fromX, fromY, toX, toY)
+        lineBetweenPoints(fromX, fromY, toX, toY, type)
     }
   }
 
@@ -243,26 +272,48 @@ function drawWeightLines(layers){
     console.log('ERROR: incorrect number of layer', layers.length)
     return
   }
-  drawLineBetweenLayers(layers[0], layers[1])
-  drawLineBetweenLayers(layers[1], layers[2])
+  drawLineBetweenLayers(layers[0], layers[1], "in")
+  drawLineBetweenLayers(layers[1], layers[2], "out")
 
 }
 // ** Update data section (Called from the onclick)
 function updateData() {
-      var weights = $("#neurons svg foreignObject input").map(function() {
-                    return $(this).data("inw");
+      var weights = $("#neuralNetwork svg path").map(function() {
+                        return $(this).data("weight");
                     }).get(),
-          bias = $("#neurons svg foreignObject input").map(function() {
-                        return $(this).data("inb");
-                        }).get(),
-          weightsOut = $("#neurons svg foreignObject input").map(function() {
-                        return $(this).data("inwo");
-                        }).get(),
-          biasOut = $("#neurons svg foreignObject input").map(function() {
-                            return $(this).data("inbo");
-                            }).get(),
+          weightsType = $("#neuralNetwork svg path").map(function() {
+                        return $(this).data("type");
+                    }).get()
+          bias = $("#neuralNetwork svg .neuralNetworkContainer .hiddenLayer rect.bias").map(function() {
+                        return $(this).data("bias");
+                    }).get(),
+          biasType = $("#neuralNetwork svg .neuralNetworkContainer .hiddenLayer rect.bias").map(function() {
+                        return $(this).data("type");
+                    }).get(),
           range = [-100, 100],
-          data = sigmoid([-100, 100], weights, bias, weightsOut, biasOut);
+          i = 0,
+          weightsOut = [],
+          weightsIn = [],
+          biasIn = [],
+          biasOut = [];
+      //Separating out the in and out weight
+      for (var i = 0; i < weights.length; i++){
+          if (weightsType[i] === "out"){
+            weightsOut.push(weights[i])
+          } else {
+            weightsIn.push(weights[i])
+          }
+      }
+      //Separating out the in and out bias
+      for (var i = 0; i < bias.length; i++){
+          if (biasType[i] === "out"){
+            biasOut.push(bias[i])
+          } else {
+            biasIn.push(bias[i])
+          }
+      }
+      //console.log(weightsIn, inBias, weightsOut, outBias)
+      var data = sigmoid([-100, 100], weightsIn, biasIn, weightsOut, biasOut);
     	// Scale the range of the data again
     	x.domain(d3.extent(data, function(d) { return d.date; }));
 	    y.domain([0, d3.max(data, function(d) { return d.close; })]);
@@ -296,6 +347,7 @@ function updateNeuron(addRemove){
       drawLayer(hiddenLayer, svgWidth*(2/4), divHeight, neurons - 1, svgWidth*(1/4))
     }
     drawWeightLines([".inputLayer", ".hiddenLayer", ".outputLayer"])
+    updateData()
 }
 
 function updateBias(item){
@@ -336,10 +388,11 @@ function updateHoverCard(type, nodeOrLink,coordinates) {
       if (this.value != null && this.value !== "") {
         if (type === "WEIGHT") {
           $(nodeOrLink).data("weight", +this.value);
+          $(nodeOrLink).css("stroke-width", +this.value);
         } else {
           $(nodeOrLink).data("bias", +this.value);
         }
-        //updateUI();
+        updateData();
       }
     });
     input.on("keypress", () => {
