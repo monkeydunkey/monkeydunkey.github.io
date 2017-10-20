@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-96x96.png">
+    <title>Hypothesis Testing</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../ThirdParty/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../CSS/blog.css" rel="stylesheet">
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item active" href="../index.html">Home</a>
+          <a class="blog-nav-item" href="../resources.html">Resources</a>
+          <a class="blog-nav-item" href="../Aboutme.html">About</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="blog-header">
+        <h1 class="blog-title">Logistic Regression from scratch</h1>
+        <p class="lead blog-description">Implementing Logistic Regression from scratch using python </p>
+      </div>
+
+
+            <div class="row">
+              <div class="col-sm-12 blog-main">
+                <div class="blog-post">
+                  <p>
+                  Logistic Regression is one the more simpler classification model that is heavily used for inference focused
+                  data analysis tasks. In this post I will be explaining the basic theory as well as implementing the
+                  standard Logistic Regression from scratch.
+                  </p>
+                  <p>
+                  Before we begin, a quick introduction to Logistic Regression. It is a regression model where the
+                  dependent variable is categorical in nature. The standard Logistic Regression deals with only binary
+                  data i.e. the dependent variable can take only one of two possible values for e.g. it can be either 1 or 0.
+                  The way Logistic Regression changes a value returned by a regression equation i.e. a line equation to a
+                  probability value for one of the 2 classes is by squishing the regression value between 0 and 1 using the
+                  sigmoid function which is given by
+                        $$ f(x) = \frac{1}{1 + e^{-X}} $$
+                  Above X represents the output of the regression equation and hence can also be replaced by the actual linear
+                  equation \( w^Tx \). Given the nature of the exponential function f(x) will reach 1 and 0 at x = \(\infty, - \infty\)
+                  respectively. The aim of learning a Logistic Regression function is figuring out the weight vector w. This is
+                  what we are going to do next, but before that a small note as in any regression equation we should a \(w_0\) bias term
+                  in the equation as well, going forward in all the equations we assume that the \(w_0\) is added to \(w^Tx\) by adding
+                  an additional dimension with value 1 to x.
+                  </p>
+                  <p>
+                  So a way to figure out the weight vector w is to essentially find weights that maximizes the likelihood of
+                  observing the given sample. This method is know as MLE Maximum Likelihood Estimation. Lets figure out what
+                  this function that we want to maximize will look like. As Logistic regression is a binary classification so
+                  the probability distribution can be modelled using Bernoulli Distribution.
+                          $$ P(y | x) = f(x)^y(1-f(x))^{1-y} $$
+                  Remember that our objective here is to maximize the likelihood of observing the given samples, another way
+                  of saying this is that we want to maximize the correct class probability of each of the samples. This can
+                  be written as:
+                          $$ l(w) = \sum_{l=1}^N P(y_l | x_l, w) $$
+                  l(w) is the function that we want to maximize but we don't have a closed form solution of it we
+                  can't really get the optimal weight values directly. Instead what we will use Gradient Ascent (just performing
+                  the reverse of gradient descent as we have to maximize the function not minimize it) to figure
+                  it out. Even though we can use Gradient Ascent on the function above directly, solving such equation after
+                  taking their log makes things a lot easier mathematically.
+                  $$
+                  ln(l(w)) = \sum_{l=1}^N ln(P(y_l | x_l, w)) \\
+                  = \sum_{l=1}^N yln(\frac{1}{1 + e^{-w^Tx}}) + (1-y)ln(1 - \frac{1}{1 + e^{-w^Tx}}) \\
+                  = \sum_{l=1}^N yln(\frac{1}{1 + e^{-w^Tx}}) + (1-y)ln(\frac{e^{-w^Tx}}{1 + e^{-w^Tx}}) \\
+                  = \sum_{l=1}^N ln(\frac{e^{-w^Tx}}{1+ e^{-w^Tx}}) - yln(e^{-w^Tx}) \\
+                  = \sum_{l=1}^N (y - 1)w^Tx - ln(1+ e^{-w^Tx}) \\
+                  $$
+                  Now that the equation is simplified a bit lets take its derivative w.r.t. to the variable we
+                  want to maximize the function's value which is w. As w is multi-dimensional we would be taking
+                  the derivative with respect to only of the dimension at one time
+                  $$
+                    \frac{\partial l(w)}{\partial w_i} = \sum_{l=1}^N (y^l - 1)x^l_i + \frac{1}{1+ e^{-w^Tx^l}}*e^{-w^Tx^l}x^l_i \\
+                    = \sum_{l=1}^N x_i((y^l - 1) + \frac{1}{1+ e^{-w^Tx^l}}*e^{-w^Tx^l}) \\
+                    = \sum_{l=1}^N x_i(y^l + \frac{e^{-w^Tx^l} - 1 - e^{-w^Tx^l}}{1+ e^{-w^Tx^l}}) \\
+                    = \sum_{l=1}^N x_i(y^l - \frac{1}{1+ e^{-w^Tx^l}}) \\
+                    = \sum_{l=1}^N x_i^l(y^l - P(y^l | x^l_i, w))
+                  $$
+                  P.S. l(w) above is same as ln(l(w)) I just changed the notation a bit to make the equation look a bit simpler
+
+                  The update equation would look like
+                  $$
+                    w_{i+1} = w_i + n\sum_{l=1}^N x_i^l(y^l - P(y^l | x^l, w))
+                  $$
+                  Here n represents the learning rate
+                  Now that we have the equations worked out lets build it out
+
+
+                  <div style="background: #ffffff; overflow:auto;width:auto;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">sigmoid</span>(x):
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #6600EE; font-weight: bold">1.0</span><span style="color: #333333">/</span>(<span style="color: #0000DD; font-weight: bold">1</span> <span style="color: #333333">+</span> np<span style="color: #333333">.</span>exp(<span style="color: #333333">-</span>x))
+
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">update_w</span>(x, y, w, learningRate):
+    <span style="color: #888888">#This function performs one round of weight update using all the samples</span>
+    scores <span style="color: #333333">=</span> np<span style="color: #333333">.</span>dot(x, w) <span style="color: #888888">#calculation wTx</span>
+    predictionVals <span style="color: #333333">=</span> sigmoid(scores) <span style="color: #888888">#getting the probabilities</span>
+    predictionError <span style="color: #333333">=</span> y <span style="color: #333333">-</span> predictionVals <span style="color: #888888"># yl−P(yl|xl,w)</span>
+    gradient <span style="color: #333333">=</span> np<span style="color: #333333">.</span>dot(x<span style="color: #333333">.</span>T, predictionError) <span style="color: #888888">#This operation calculates the gradient for all dimension at once</span>
+    updateVal <span style="color: #333333">=</span> learningRate <span style="color: #333333">*</span> gradient
+    <span style="color: #008800; font-weight: bold">return</span> w <span style="color: #333333">+</span> updateVal
+
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">logistic_regression</span>(x, y, learningRate, iterations<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">30000</span>, add_intercept<span style="color: #333333">=</span><span style="color: #007020">True</span>):
+    <span style="color: #008800; font-weight: bold">if</span> add_intercept:
+        intercept <span style="color: #333333">=</span> np<span style="color: #333333">.</span>ones((x<span style="color: #333333">.</span>shape[<span style="color: #0000DD; font-weight: bold">0</span>], <span style="color: #0000DD; font-weight: bold">1</span>))
+        x <span style="color: #333333">=</span> np<span style="color: #333333">.</span>hstack((x, intercept))
+    <span style="color: #888888"># initializing w to be all zeroes</span>
+    w <span style="color: #333333">=</span> np<span style="color: #333333">.</span>zeros(x<span style="color: #333333">.</span>shape[<span style="color: #0000DD; font-weight: bold">1</span>])
+    <span style="color: #008800; font-weight: bold">for</span> it <span style="color: #000000; font-weight: bold">in</span> <span style="color: #007020">xrange</span>(iterations):
+        w_new <span style="color: #333333">=</span> update_w(x, y, w, learningRate)
+        w <span style="color: #333333">=</span> w_new
+    <span style="color: #008800; font-weight: bold">return</span> w
+</pre></div>
+
+                  </p>
+                  <p>
+                    Thats it. Above is all the code required to make Logistic Regression work. Now to test it we will need a dataset.
+                    Lets Generate one.
+                    <div style="background: #ffffff; overflow:auto;width:auto;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">numSamples <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">5000</span>
+negativeSamples <span style="color: #333333">=</span> np<span style="color: #333333">.</span>random<span style="color: #333333">.</span>multivariate_normal([<span style="color: #0000DD; font-weight: bold">0</span>, <span style="color: #0000DD; font-weight: bold">0</span>], [[<span style="color: #0000DD; font-weight: bold">1</span>, <span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">75</span>],[<span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">75</span>, <span style="color: #0000DD; font-weight: bold">1</span>]], numSamples)
+positiveSamples <span style="color: #333333">=</span> np<span style="color: #333333">.</span>random<span style="color: #333333">.</span>multivariate_normal([<span style="color: #0000DD; font-weight: bold">2</span>, <span style="color: #0000DD; font-weight: bold">5</span>], [[<span style="color: #0000DD; font-weight: bold">1</span>, <span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">75</span>],[<span style="color: #333333">.</span><span style="color: #0000DD; font-weight: bold">75</span>, <span style="color: #0000DD; font-weight: bold">1</span>]], numSamples)
+samples <span style="color: #333333">=</span> np<span style="color: #333333">.</span>concatenate((negativeSamples, positiveSamples))
+labels <span style="color: #333333">=</span> np<span style="color: #333333">.</span>concatenate((np<span style="color: #333333">.</span>zeros(numSamples), np<span style="color: #333333">.</span>ones(numSamples)))
+plt<span style="color: #333333">.</span>scatter(samples[:, <span style="color: #0000DD; font-weight: bold">0</span>], samples[:, <span style="color: #0000DD; font-weight: bold">1</span>], c <span style="color: #333333">=</span> <span style="color: #007020">map</span>(<span style="color: #008800; font-weight: bold">lambda</span> x: <span style="background-color: #fff0f0">&#39;b&#39;</span> <span style="color: #008800; font-weight: bold">if</span> x <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">0</span> <span style="color: #008800; font-weight: bold">else</span> <span style="background-color: #fff0f0">&#39;r&#39;</span>, labels), alpha <span style="color: #333333">=</span> <span style="color: #6600EE; font-weight: bold">0.4</span>)
+</pre></div>
+
+                    <figure>
+                      <img style = "display: block;margin: 0 auto; width:50%" src="../resources/images/LogisticRegressionTestData.png" alt='Sample Data' />
+                      <figcaption style = "text-align:center">Sample Data</figcaption>
+                    </figure>
+                    To Test our implementation we will compare the weights obtained by the above implementation with Sci-kit learn's implementation.
+                    <div style="background: #ffffff; overflow:auto;width:auto;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">sklearn.linear_model</span> <span style="color: #008800; font-weight: bold">import</span> LogisticRegression
+weights <span style="color: #333333">=</span> logistic_regression(samples, labels, <span style="color: #6600EE; font-weight: bold">1e-4</span>, <span style="color: #0000DD; font-weight: bold">30000</span>, <span style="color: #007020">True</span>)
+mdl <span style="color: #333333">=</span> LogisticRegression(C<span style="color: #333333">=</span><span style="color: #6600EE; font-weight: bold">1e15</span>, max_iter <span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">30000</span>)
+mdl<span style="color: #333333">.</span>fit(samples, labels)
+<span style="color: #008800; font-weight: bold">print</span> mdl<span style="color: #333333">.</span>coef_, mdl<span style="color: #333333">.</span>intercept_
+<span style="color: #008800; font-weight: bold">print</span> weights
+
+[[<span style="color: #333333">-</span><span style="color: #6600EE; font-weight: bold">3.7105873</span>  <span style="color: #6600EE; font-weight: bold">7.9527151</span>]] [<span style="color: #333333">-</span><span style="color: #6600EE; font-weight: bold">16.16972923</span>]
+[ <span style="color: #333333">-</span><span style="color: #6600EE; font-weight: bold">3.39479514</span>   <span style="color: #6600EE; font-weight: bold">7.28384609</span> <span style="color: #333333">-</span><span style="color: #6600EE; font-weight: bold">14.78495992</span>]
+</pre></div>
+
+                  </p>
+                  <p>
+
+                    I set C to a very high value so as to discard regularization as I haven't added a term for regularization in my implementation.
+                    The weights obtained are very close which should be the case if the implemented algorithm is correct.
+                    Though the weights are close, sklearn's implementation is way faster. This is because sklearn uses a highly optimized solver.
+                    <br>
+                    <br>
+                    In closing I would like to add that, even though our weights were quite close to the ones obtained by sklearn,
+                    it never makes sense to implement such systems from scratch to run on production systems.
+                  </p>
+                </div><!-- /.blog-post -->
+              </div><!-- /.blog-main -->
+            </div><!-- /.row -->
+            <div id="disqus_thread"></div>
+            <script>
+                /**
+                *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+                /*
+                var disqus_config = function () {
+                this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+                this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                };
+                */
+                (function() { // DON'T EDIT BELOW THIS LINE
+                var d = document, s = d.createElement('script');
+                s.src = 'https://https-monkeydunkey-github-io.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div><!-- /.container -->
+
+    <footer class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>A shout out to Rob Hust for the fantastic icon.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../ThirdParty/bootstrap/js/bootstrap.min.js"></script>
+
+  </body>
+</html>
