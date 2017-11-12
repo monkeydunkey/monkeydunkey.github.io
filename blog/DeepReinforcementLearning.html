@@ -18,6 +18,8 @@
     <script type="text/javascript" async
       src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/go.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
   </head>
 
   <body>
@@ -50,39 +52,43 @@
                     Deep Reinforcement Leanrning agent that can learn how to properly land a shuttle on the
                     surface of moon. The game evnvironemnt was Open AI's
                     <a href="https://gym.openai.com/envs/LunarLander-v2/">Lunar Landar </a>. The particular
-                    technique that was used was Q learning, which is same as what Deep Mind used in its landmark
-                    2013 paper on using <a href="https://arxiv.org/pdf/1312.5602v1.pdf"> Deep Reinforcement Learning to play Atari </a>.
-                    This post in no way covers all the concepts requried for implementing such a system from scratch rather I will try
+                    technique that I used was Q learning, which is same as what Deep Mind used in its landmark
+                    2013 paper on using <a href="https://arxiv.org/pdf/1312.5602v1.pdf"> Deep Reinforcement Learning to play Atari breakout </a>.
+                    This post in no way covers all the concepts requried for implementing such a system from scratch, rather I will try
                     to provide a brief overview of the concepts related. Finally, in no way I am claiming that following whatever
-                    I am about to say will lead to results similar to what I have as neural network are pretty hard to train correctly
-                    and also they are pretty much non-deterministic in nature. So what I will try to do is point out the problems I faced
-                    while training my network and the steps I took to solve them.
+                    I am about to say will lead to results similar to what I have, as neural network are pretty hard to train correctly
+                    and require lot of tweaking to work correctly due to their non-deterministic nature. So what I will try to
+                    do is point out the problems I faced while training my network and the steps I took to solve them.
                   </p>
+                  <figure>
+                      <img style = "display: block;margin: 0 auto; width:50%" src="../resources/images/lunarLanderGame.png" alt='Lunar Lander Game' />
+                      <figcaption style = "text-align:center">The aim is to land the lander between the flags as softly as possible</figcaption>
+                  </figure>
                   <p>
-                    Before we begin, a quick introduction to basic of Q learning and how we can modify it to use it with a
+                    Before we begin, a quick introduction to basic of Q learning and how we can use it with a
                     neural network. The optimal Q-value for a state action pair according to the Bellman equation is given
                     by the following equation
                           $$ Q*(s, a) = \sum_{s'}p(s'|s, a)(R(s, a, s') + \gamma*\max_a Q(s', a)) $$
                     here Q(s, a) is the Q-value of a state action pair, p(s'|s, a) is the probability of reaching state s'
-                    by performing action a from state s (by using probability we are taking into account the uncertainity associated
-                    with taking an action),  R(s, a, s') is the reward for the action and \( \gamma \) is the discount factor which
+                    by performing action a from state s (by encorporating probability of a transition we are taking into
+                    account the uncertainity associated with taking an action),  R(s, a, s') is the reward for the action and \( \gamma \) is the discount factor which
                     represents by how much should future rewards should affect actions in current state. A high \( \gamma \) would
                     lead to the bot favoring higher rewards in the future where as lower values will make it look for more
                     immediate rewards
                   </p>
                   <p>
-                    In our current scenario as we are playing a game we can assume that whatever action we take gets executed
-                    with 100% certainity, thus the above equations becomes:
-                     $$ Q*(s, a) = R(s, a, s') + \gamma*\max_a Q(s', a) $$
+                    In our current scenario as we are playing a game in we can assume that whatever action we take gets executed
+                    with 100% certainity, thus the above equation becomes:
+                     $$ Q*(s, a) = R(s, a) + \gamma*\max_a Q(s', a) $$
                     One question that came to my mind while training the neural network was that why to do it this way
-                    i.e. why use a neural network which is very very hard to train when you can simply use methods like
-                    value iteration and policy iteration which are deterministic and very easy to implement. The reason
+                    i.e. why use a neural network which is very very hard to train when you can simply use more traditional
+                    methods like value iteration and policy iteration which are deterministic and easy to implement. The reason
                     for this is that though Q value update using Bellman is correct in theory (Bellman equation basically says
                     start optimal and be optimal at every step of the way) its implementation using value or policy iteration
                     uses discrete state spaces, which is something we rarely come accross in real world problems. We could
                     always try and discretize the space but this would usually lead us to store a lot of state information,
-                    many of which would be about nearby states which can have similar Q values. This is were a neural network
-                    comes in, it can be used to produce Q-values from a continous state space.
+                    many of which would be about nearby states which can have similar Q values. Neural network solves this
+                    exact problem, we can use it to produce the Q(s, a) values for a continous state space.
                   </p>
                   <p>
                     Now that we know what the Q-value equation looks like and why we should use neural network to solve it, lets
@@ -91,14 +97,67 @@
                     value in this case can be the mean squared difference between the Q-value returned by the Bellman equation
                     and the one returned by the neural network. This makes sense as we would like to train our model such that
                     the Q-values produced are exactly same as what we would have achieved using methods like value iteration if
-                    we would have discretized the state space. So our loss functions looks like the following.
+                    we would have discretized the state space. So our loss function should looks like the following.
                     $$ L = mean((Bellman - Q(s, a))^2) $$
                     Subsituiting the equation for Bellman value we solved above, we get
-                    $$ L = mean((R(s, a, s') + \gamma*\max_a Q(s', a) - Q(s, a))^2) $$
+                    $$ L = mean((R(s, a) + \gamma*\max_a Q(s', a) - Q(s, a))^2) $$
                   </p>
                   <p>
                     Now that we have all the maths figured out, its time to get into the technical details and implement it
-                    using Tensorflow
+                    using Tensorflow. First, lets define the our model.
+                    <div style="background: #ffffff; overflow:auto;width:auto;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">build_model</span>(observation_input, trainable<span style="color: #333333">=</span><span style="color: #007020">True</span>):
+        hidden <span style="color: #333333">=</span> tf<span style="color: #333333">.</span>layers<span style="color: #333333">.</span>dense(observation_input, <span style="color: #0000DD; font-weight: bold">64</span>, activation <span style="color: #333333">=</span> tf<span style="color: #333333">.</span>nn<span style="color: #333333">.</span>relu, trainable <span style="color: #333333">=</span> trainable, name <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;dense&#39;</span>)
+        hidden_2 <span style="color: #333333">=</span> tf<span style="color: #333333">.</span>layers<span style="color: #333333">.</span>dense(hidden, <span style="color: #0000DD; font-weight: bold">64</span>, activation <span style="color: #333333">=</span> tf<span style="color: #333333">.</span>nn<span style="color: #333333">.</span>relu, trainable <span style="color: #333333">=</span> trainable, name <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;dense_1&#39;</span>)
+        hidden_3 <span style="color: #333333">=</span> tf<span style="color: #333333">.</span>layers<span style="color: #333333">.</span>dense(hidden_2, <span style="color: #0000DD; font-weight: bold">64</span>, activation <span style="color: #333333">=</span> tf<span style="color: #333333">.</span>nn<span style="color: #333333">.</span>relu, trainable <span style="color: #333333">=</span> trainable, name <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;dense_2&#39;</span>)
+        action_values <span style="color: #333333">=</span> tf<span style="color: #333333">.</span>squeeze(tf<span style="color: #333333">.</span>layers<span style="color: #333333">.</span>dense(hidden_3, env<span style="color: #333333">.</span>action_space<span style="color: #333333">.</span>n, trainable <span style="color: #333333">=</span> trainable, name <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;qValueLayer&quot;</span>))
+        <span style="color: #008800; font-weight: bold">return</span> action_values
+</pre></div>
+
+                  </p>
+                  <p>
+                    The build_model function takes 2 input variables "observation_input" which is a tensorflow place holder for the input data and
+                    "trainable" is a boolean variable which determines whether or not a network needs to be trained. This is used to create a target network,
+                    more on this later. The output dimension of the network is set to "env.action_space.n" (env is the object reference to the OpenAI's lunar
+                    landar gym) which gives the number of actions possible, which in this case is 4. So what we are trying to do with this network model
+                    is to get the Q-values associated with all the actions for a given state, as the input to this network will be states spaces and the output will
+                    be the Q-value associated with each of the actions. This is exactly how we were supposed to use a neural network i.e. use it to get
+                    Q-values for the state action pair.
+                  </p>
+                  <p>
+                    Some subtle points about this network, the weights of the layers are initialized using the xavier or glorot initialization,
+                    it is actually the default initialization scheme in Tensorflow. All, the biases
+                    are all intialized to 0. The reason I am pointing these out is cause whether or not a network learns anything or someting
+                    depends on how the weights and biases were initialized.
+                  </p>
+                  <p>
+                    Now that we have a network set up its time to define the loss. As specified earlier the loss should sort of the difference
+                    between the ideal output and the actual output received. Lets first define what the ideal output should have been. If the
+                    state is the terminal i.e. the game is over the ideal output is the reward achieved, i.e.
+                    $$ Q*(s, a) = R(s, a)$$
+                    If the state is not terminal then the ideal Q-value is given by:
+                    $$ Q*(s, a) = R(s, a) + \gamma*\max_a Q(s', a) $$
+                    A thing to note here is that the ideal output is a 1 D vector, hence the actual output has also got to be a one dimensional vector
+                    as well. Remember that the network we defined above gives a 4 D vector as output for each input observation passed. This is something
+                    that confused me for quite some time as I couldn't understand how to use the network's out. After a few frustrating hours and
+                    going back and forth in defining my loss I understood that what I actually need for the network's output is Q(s, a) that is the
+                    value returned by the network for a particular action. Basically for each state we get a 4 D output, from this 4 D vector we
+                    need to choose the value corresponding to the action that was actually taken in that state. Doing this for all input observations
+                    we get a 1 D, which we can then use for calculating the loss.
+                  </p>
+                  <p>
+                    We with the network architecture and the loss function figured out, the only major part that remains to be setup is the eplison
+                    greedy strategy for exploration vs exploitation. But before that I feel now is a right time to talk about some techical/engineering
+                    things to make the network learn properly.
+                    <ol>
+                        <li><i>Replay Memory</i>: Use a replay memory basically a list to store the observations i.e. (R, S, A, S'). Here
+                          R is the reward returned, S is the current state, A the action taken from that state and S' the state where
+                          the bot reached after taking te action. A each network update step sample observations of the required batch
+                          size from this list. The reason for doing this is that it allows the network to see varied samples at each training
+                          step instead of just the most recent observations and thus leads to better generalization
+                        </li>
+                        <li><i>Target Network</i>:</li>
+                        <li><i>Huber Loss</i>:</li>
+                    </ol>
                   </p>
                 </div><!-- /.blog-post -->
               </div><!-- /.blog-main -->
