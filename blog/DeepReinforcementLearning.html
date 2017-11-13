@@ -45,6 +45,7 @@
             <div class="row">
               <div class="col-sm-12 blog-main">
                 <div class="blog-post">
+                  <h4>Introduction<h4>
                   <p>
                     Using Reinforcement learning techniques to train bot that can play 2D video games was something
                     I wanted to try from a long time. Fortunately as a part of the Artifical Intelligence
@@ -102,6 +103,7 @@
                     Subsituiting the equation for Bellman value we solved above, we get
                     $$ L = mean((R(s, a) + \gamma*\max_a Q(s', a) - Q(s, a))^2) $$
                   </p>
+                  <h4>Network Architecture and Loss Calculation</h4>
                   <p>
                     Now that we have all the maths figured out, its time to get into the technical details and implement it
                     using Tensorflow. First, lets define the our model.
@@ -145,19 +147,84 @@
                     we get a 1 D, which we can then use for calculating the loss.
                   </p>
                   <p>
-                    We with the network architecture and the loss function figured out, the only major part that remains to be setup is the eplison
+                    With the network architecture and the loss function figured out, the only major part that remains to be setup is the eplison
                     greedy strategy for exploration vs exploitation. But before that I feel now is a right time to talk about some techical/engineering
                     things to make the network learn properly.
                     <ol>
-                        <li><i>Replay Memory</i>: Use a replay memory basically a list to store the observations i.e. (R, S, A, S'). Here
+                        <li><i>Replay Memory</i>: Use a replay memory which is basically a list to store the observations i.e. (R, S, A, S'). Here
                           R is the reward returned, S is the current state, A the action taken from that state and S' the state where
-                          the bot reached after taking te action. A each network update step sample observations of the required batch
-                          size from this list. The reason for doing this is that it allows the network to see varied samples at each training
-                          step instead of just the most recent observations and thus leads to better generalization
+                          the bot reached after taking te action. At each network update step sample observations of the required batch
+                          size from this list. The reason for doing this is that neural networks needs samples which are not correlated and
+                          subsequent observations in a game will always be correlated to each other. So to solve this problem of correlation,
+                          we can store all the observations seen till now and then randomly sample them.
                         </li>
-                        <li><i>Target Network</i>:</li>
-                        <li><i>Huber Loss</i>:</li>
+                        <li><i>Target Network</i>: The way refinforcement learning usually works is that the enviroment provides a feedback
+                          about the actions a bot/agent takes and then based on this feedback bot/agent adjusts its decision system. This feedback
+                          creates a problem for training a neural network as this feedback prevents the network from generalizing well. To solve,
+                          we use what is called a Target network, which we won't be training (this is what the trainable parameter was for in the build_model function)
+                          . What we will do for this network is that we will copy the weights from the network we are training to this one at certain
+                          intervals (it is a hyperparameter). We will be using this network for calculating the ideal output vector.
+                         </li>
+                        <li><i>Huber Loss</i>: The loss that I defined earlier was Mean Squared error though this is the loss function the team at
+                          Deep Mind used to train its network but I found it very unstable. Instead I used
+                          <a href="https://en.wikipedia.org/wiki/Huber_loss">Huber Loss</a> to train my model as it is more robust to outliers and hence
+                          more stable.
+                        </li>
                     </ol>
+                  </p>
+                  <h4>Epsilon Greedy Strategy</h4>
+                  <p>
+                    The final piece of the puzzle to make the agent learn is to decide on the Epsilon Greedy Strategy. It
+                    deals with what actions an agent takes given an observation. The way it is defined that the agent
+                    performs random action with Epsilon probability and uses the learned knowledge the rest of the time.
+                    Pseudo code for Epsilon Greedy Strategy look like the following
+                    <div style="background: #ffffff; overflow:auto;width:auto;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">takeAction</span>(Agent, Observation, epsilon):
+       <span style="color: #008800; font-weight: bold">return</span> Action<span style="color: #333333">.</span>Random() <span style="color: #008800; font-weight: bold">if</span> random() <span style="color: #333333">&lt;</span> epsilon <span style="color: #008800; font-weight: bold">else</span> Agent<span style="color: #333333">.</span>getAction(Observation)
+</pre></div>
+
+                </p>
+                <p>
+                    What we ideally want to do is explore a lot of states in the beginining by taking random actions
+                     and then as the agent learn make the actions less and less random and more based on the information that
+                     the agent has learned its environment. The reason for doing this is that in the beginining the agent
+                     knows nothing about the environment it is in and if we let it perform actions based on what it knows it won't
+                      properly explore all the states and may miss out on a higher reward. We also want the randomness
+                      to die down as the agent learns so that it can solidify its understanding of the enviroment by acting on
+                      what it knows about it.
+                  </p>
+                  <p>
+                    There can be multiple different strategies that can work, linear decay, exponential decay and so on. What worked
+                    for me was to let the epsilon value decay linearly for the first 50000 observations and then decay it exponentially
+                    from there on. Following is how my agent worked after 4000 episodes of training, one episode is one complete round of
+                    the game.
+                  </p>
+                  <figure>
+                      <img style = "display: block;margin: 0 auto; width:50%" src="../resources/images/lunarLandar.gif" alt='Lunar Lander Game' />
+                      <figcaption style = "text-align:center">My Agent after 4000 episodes of training</figcaption>
+                  </figure>
+                  <p>
+                    Lastly here are some general purpose tips for training a neural network.
+                    <ol>
+                      <li>Big Batch Size: Ensure that the Batch size is big enough as small batch size leads to unstability in the loss.</li>
+                      <li>Use TensorBoard to Visualize network: This is very important as this helps in debugging the model</li>
+                      <li>Use Small learning rate: Always try and use a small learning rate in the order of 10<sup>-3</sup>.
+                        Further using something like Nestrov momentum always help </li>
+                      <li>Add Regulaization Term: A possible problem with the network could be that the weights of your layer are blowing up
+                      during training in such cases adding a regulaization term for the layer weights to the loss value helps</li>
+                      <li>Check network initialization: A possible problem why the network is nit learning anything is cause the weights
+                      and biases were not initialized properly</li>
+                      <li>Normalize the input values: This is important while training neural networks as the loss is dependent on the distance.
+                      So bigger values will have a higher impact on the loss.</li>
+                    </ol>
+                  If after following the above steps you still cannot figure out what is wrong with your network. I would suggest reading
+                  this <a href = "https://blog.slavv.com/37-reasons-why-your-neural-network-is-not-working-4020854bd607">post on debugging neural networks</a>.
+                  My implementation of the Lunar Lander agent can be found <a href = "https://github.com/monkeydunkey/Lunar_Lander_v2">here.</a>
+                  </p>
+                  <p>
+                    Thats all for now. If you have any questions please leave a comment!
+                  </p>
+                  <p>
+                    Cheers!!
                   </p>
                 </div><!-- /.blog-post -->
               </div><!-- /.blog-main -->
