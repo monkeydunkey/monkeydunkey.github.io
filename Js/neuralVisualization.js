@@ -24,28 +24,31 @@ function sigmoid(X, w, b, wOut, bOut){
   //for (var k = 0; k < w.length; k++) {
   //  multiRange[k] = range
   //}
-   biasMat = math.matrix(biasIn),
-      dataTemp = math.add(1, math.exp(math.multiply(-1, math.add(math.multiply(math.transpose(math.matrix(range)), math.matrix([w])), biasMat))))
-  dataTemp = math.add(math.multiply(math.matrix(wOut), math.transpose(dataTemp)), biasOut)
+  biasMat = math.matrix(biasIn)
+  dataTemp = math.dotDivide(1, math.add(1, math.exp(math.multiply(-1, math.add(math.multiply(math.transpose(math.matrix(range)), math.matrix([w])), biasMat)))))
+
+  dataTemp = math.multiply(math.matrix(wOut), math.transpose(dataTemp))
+  console.log('sigmoid data', dataTemp)
   //Time to create the data in the required format
-  dataTemp = dataTemp.toArray().map(inverse)
+  dataTemp = dataTemp.toArray()//.map(inverse)
    ind = 0
   for (var k = X[0]; k < X[1]; k++){
       data.push({date: 0.1 * k, close: dataTemp[ind]});
       ind += 1
   }
+  console.log('final data', data)
   return data
 }
 // Set the dimensions of the canvas / graph
 var margin = {top: 30, right: 10, bottom: 30, left: 30},
     width = 250,
-    height = 200,
+    height = 240,
     hiddenLayerWidth = 340,
     x = d3.scale.linear().rangeRound([0, width]),
     y = d3.scale.linear().rangeRound([height, 0]),
     xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5),
     yAxis = d3.svg.axis().scale(y).orient("left").ticks(5),
-    data = sigmoid([-100, 100], [2, 2, 2], [12, 12, 12], [2, 2, 2], [12, 12, 12]),
+    data = sigmoid([-100, 101], [5, 5, 5], [1, 1, 1], [5, 5, 5], [1, 1, 1]),
     circleRadius = 20,
     neurons = 3
     valueline = d3.svg.line().x(function(d) { return x(d.date); })
@@ -153,7 +156,7 @@ function drawBias(layer, layerWidth, layerHeight, numNeurons, start_x){
 
   for (var i=0; i<numNeurons; i++){
     drawNeuron(layer, canvas_x , canvas_y + canvasHeight + 4, 2, 2, true, "in")
-    drawNeuron(layer, canvas_x - 2 + canvasWidth, canvas_y + canvasHeight + 4, 2, 2, true, "out")
+    //drawNeuron(layer, canvas_x - 2 + canvasWidth, canvas_y + canvasHeight + 4, 2, 2, true, "out")
     canvas_y += stepSize
   }
 }
@@ -338,15 +341,17 @@ function updateNeuron(addRemove){
         neurons = $("#neuralNetwork .hiddenLayer rect").length,
         svgWidth = hiddenLayerWidth,
         divHeight = height + margin.top + margin.bottom;
+    neurons = addRemove ? (neurons/2) + 1 : (neurons/2) - 1
+    if (neurons > 4 || neurons < 1){
+      return
+    }
+
     hiddenLayer.selectAll("rect").remove()
     d3.selectAll("#neuralNetwork path").remove()
-    if (addRemove){
-      drawLayer(hiddenLayer, svgWidth*(2/4), divHeight, neurons + 1, svgWidth*(1/4))
-    }
-    else {
-      drawLayer(hiddenLayer, svgWidth*(2/4), divHeight, neurons - 1, svgWidth*(1/4))
-    }
+
+    drawLayer(hiddenLayer, svgWidth*(2/4), divHeight, neurons, svgWidth*(1/4))
     drawWeightLines([".inputLayer", ".hiddenLayer", ".outputLayer"])
+    drawBias(hiddenLayer, svgWidth*(2/4), divHeight, neurons, svgWidth*(1/4))
     updateData()
 }
 
@@ -374,7 +379,8 @@ function updateWeight(item){
 drawNN()
 
 function updateHoverCard(type, nodeOrLink,coordinates) {
-  var hovercard = d3.select("#hovercard");
+  var hovercard = d3.select("#hovercard"),
+      positionAdjust = 350;
   if (type == null) {
     hovercard.style("display", "none");
     d3.select("#svg").on("click", null);
@@ -388,7 +394,8 @@ function updateHoverCard(type, nodeOrLink,coordinates) {
       if (this.value != null && this.value !== "") {
         if (type === "WEIGHT") {
           $(nodeOrLink).data("weight", +this.value);
-          $(nodeOrLink).css("stroke-width", +this.value);
+          $(nodeOrLink).css("stroke-width", + Math.abs(this.value));
+          $(nodeOrLink).css("stroke", this.value >=0 ? "steelblue" : "red")
         } else {
           $(nodeOrLink).data("bias", +this.value);
         }
@@ -407,8 +414,8 @@ function updateHoverCard(type, nodeOrLink,coordinates) {
     $(nodeOrLink).data("bias");
   var name = (type === "WEIGHT") ? "Weight" : "Bias";
   hovercard.style({
-    "left": `${coordinates[0] + 20}px`,
-    "top": `${coordinates[1]}px`,
+    "left": `${coordinates[0] + 30}px`,
+    "top": `${coordinates[1] + positionAdjust}px`,
     "display": "block"
   });
   hovercard.select(".type").text(name);

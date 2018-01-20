@@ -97,16 +97,62 @@
       </nav>
     </div>
   </div>
-  <div id="hovercard">
-          <div style="font-size:10px">Click anywhere to edit.</div>
-          <div><span class="type">Weight/Bias</span> is <span class="value">0.2</span><span><input type="number"/></span>.</div>
-  </div>
+
   <div class="container">
+
+    <div class="blog-header">
+      <h1 class="blog-title">Neural Network - Universal Approximator</h1>
+      <p class="lead blog-description">Visualizing the output of a single layer Neural Network</p>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12 blog-main">
+        <div class="blog-post">
+          <p>
+            The universal approximation theorem states that a neural network with a single hidden layer with
+            finite number of neurons can approximate any continuous function. To check this theorem I built
+            a visualization using D3.js, where in one can add neurons to a hidden layer, adjust the weight and
+            bias term and try to approximate any continous function
+          </p>
+        </div><!-- /.blog-post -->
+      </div><!-- /.blog-main -->
+    </div><!-- /.row -->
+    <div id="hovercard">
+            <div style="font-size:10px">Click anywhere to edit.</div>
+            <div><span class="type">Weight/Bias</span> is <span class="value">0.2</span><span><input type="number"/></span>.</div>
+    </div>
+
+    <!-- Second Degree Polynomial 3 in hidden layer, in weights all 5, out weights (-10, 5, 5) bias (5, 20, 25)
+        M Shape 4 in hidden layer, in weights all 5, out weights (-5, -10, 10, 5) bias (7, -10, 15, 1)
+        Simple sigmoid
+    -->
+
     <div id="visualizationContainer" class="col-sm-12">
       <div id="neuralNetwork" class="col-sm-6 layer"></div>
       <div id="activationOutput" class="col-sm-6 layer"></div>
     </div>
+
+    <div id="disqus_thread"></div>
+    <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        /*
+        var disqus_config = function () {
+        this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+        */
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://https-monkeydunkey-github-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
   </div>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="../ThirdParty/bootstrap/js/bootstrap.min.js"></script>
 <script src="https://d3js.org/d3.v3.min.js"></script>
